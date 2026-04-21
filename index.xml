@@ -9,6 +9,409 @@
     <managingEditor>d.shved.wrk@gmail.com (Dmytro Shved)</managingEditor>
     <webMaster>d.shved.wrk@gmail.com (Dmytro Shved)</webMaster>
     <copyright>© 2026. All rights reserved</copyright>
+    <lastBuildDate>Tue, 21 Apr 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://dmytroshved.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deep dive into DbContext in ASP.NET Core Identity</title>
+      <link>http://dmytroshved.com/blog/identity-dbcontext/</link>
+      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate><author>d.shved.wrk@gmail.com (Dmytro Shved)</author>
+      <guid>http://dmytroshved.com/blog/identity-dbcontext/</guid>
+      <description>&lt;p&gt;Do you know for sure what&amp;rsquo;s going on under the hood when you create your &lt;code&gt;ApplicationDbContext&lt;/code&gt; using ASP.NET Core Identity in EF Core? Where do the &lt;strong&gt;AspNetUsers&lt;/strong&gt; and &lt;strong&gt;AspNetRoles&lt;/strong&gt; tables actually come from? What really happens when you&amp;rsquo;re inherit from &lt;code&gt;IdentityDbContext&amp;lt;ApplicationUser&amp;gt;&lt;/code&gt;?&lt;/p&gt;&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-csharp&#34; data-lang=&#34;csharp&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 1&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;ApplicationDbContext&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IdentityDbContext&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ApplicationUser&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 2&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 3&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ApplicationDbContext&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;DbContextOptions&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ApplicationDbContext&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;options&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;base&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;options&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 4&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 5&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DbSet&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TodoList&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;TodoLists&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Set&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TodoList&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;();&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 6&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 7&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DbSet&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TodoItem&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;TodoItems&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Set&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TodoItem&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;();&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 8&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 9&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kd&#34;&gt;protected&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;override&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;OnModelCreating&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ModelBuilder&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;builder&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt;11&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;base&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OnModelCreating&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;builder&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;builder&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ApplyConfigurationsFromAssembly&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Assembly&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;GetExecutingAssembly&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt;13&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;ln&#34;&gt;14&lt;/span&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Can you tell what exactly happens within the chain of inheritance? What path does the &lt;code&gt;ModelBuilder builder&lt;/code&gt; take? What does that simple inheritance from &lt;code&gt;IdentityDbContext&amp;lt;ApplicationUser&amp;gt;&lt;/code&gt; actually brings to the table?&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<p>Do you know for sure what&rsquo;s going on under the hood when you create your <code>ApplicationDbContext</code> using ASP.NET Core Identity in EF Core? Where do the <strong>AspNetUsers</strong> and <strong>AspNetRoles</strong> tables actually come from? What really happens when you&rsquo;re inherit from <code>IdentityDbContext&lt;ApplicationUser&gt;</code>?</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">ApplicationDbContext</span> <span class="p">:</span> <span class="n">IdentityDbContext</span><span class="p">&lt;</span><span class="n">ApplicationUser</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">    <span class="kd">public</span> <span class="n">ApplicationDbContext</span><span class="p">(</span><span class="n">DbContextOptions</span><span class="p">&lt;</span><span class="n">ApplicationDbContext</span><span class="p">&gt;</span> <span class="n">options</span><span class="p">)</span> <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">    <span class="kd">public</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">TodoList</span><span class="p">&gt;</span> <span class="n">TodoLists</span> <span class="p">=&gt;</span> <span class="n">Set</span><span class="p">&lt;</span><span class="n">TodoList</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">    <span class="kd">public</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">TodoItem</span><span class="p">&gt;</span> <span class="n">TodoItems</span> <span class="p">=&gt;</span> <span class="n">Set</span><span class="p">&lt;</span><span class="n">TodoItem</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">    <span class="kd">protected</span> <span class="kd">override</span> <span class="k">void</span> <span class="n">OnModelCreating</span><span class="p">(</span><span class="n">ModelBuilder</span> <span class="n">builder</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl">        <span class="k">base</span><span class="p">.</span><span class="n">OnModelCreating</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">12</span><span class="cl">        <span class="n">builder</span><span class="p">.</span><span class="n">ApplyConfigurationsFromAssembly</span><span class="p">(</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetExecutingAssembly</span><span class="p">());</span>
+</span></span><span class="line"><span class="ln">13</span><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="p">}</span></span></span></code></pre></div><p>Can you tell what exactly happens within the chain of inheritance? What path does the <code>ModelBuilder builder</code> take? What does that simple inheritance from <code>IdentityDbContext&lt;ApplicationUser&gt;</code> actually brings to the table?</p>
+<blockquote>
+<p>Keep that statement in mind: We&rsquo;re passing the <code>ModelBuilder builder</code> object into this entire chain of inheritance, so EF Core builds out the entire schema. Didn&rsquo;t click? Keep reading :)</p>
+</blockquote>
+
+
+
+
+
+<pre tabindex="0"><code>IdentityDbContext&lt;ApplicationUser&gt;
+    ↑
+ApplicationDbContext</code></pre><p>Well, let&rsquo;s dive in!</p>
+<hr>
+<p><strong>ASP.NET Core Identity</strong> is  a membership system that provides common features like user registration, login, role management, and claims-based authentication.</p>
+<p>For all this to become a reality, we need a Users table and a Roles table - along with several supporting tables. So, in addition to registering <code>DbSet</code> properties to interact with respective tables, our <code>ApplicationDbContext</code> must provide us with the entire schema and their respective columns:</p>
+<ul>
+<li>Roles tables
+<ul>
+<li><code>AspNetRoles</code></li>
+<li><code>AspNetRoleClaims</code></li>
+<li><code>AspNetUserRoles</code></li>
+</ul>
+</li>
+<li>Users tables
+<ul>
+<li><code>AspNetUsers</code></li>
+<li><code>AspNetUserClaims</code></li>
+<li><code>AspNetUserLogins</code></li>
+<li><code>AspNetUserTokens</code></li>
+<li><code>AspNetUserPasskeys</code></li>
+</ul>
+</li>
+</ul>
+<p>So, <strong>Identity should somehow create those tables for us</strong>, right? Right :)</p>
+<p>lets look at how it&rsquo;ll create them for us.</p>
+<hr>
+<p>First of all, following the inheritance chain:</p>
+
+
+
+
+
+<pre tabindex="0"><code>IdentityDbContext&lt;ApplicationUser&gt;
+    ↑
+ApplicationDbContext&lt;IdentityUser&gt;</code></pre><p>Navigate to the source code of the:</p>
+
+
+
+
+
+<pre tabindex="0"><code>IdentityDbContext&lt;ApplicationUser&gt; </code></pre><p>We&rsquo;ll get into <code>IdentityDbContext.cs</code>. For now, just understand that <code>IdentityDbContext</code> class is responsible for generating the Roles tables and their respective columns for our <code>IdentityUser</code>.</p>
+<blockquote>
+<p>The common misconception is that <code>IdentityDbContext</code> handles <strong>only</strong> roles. In reality <code>IdentityDbContext</code> is responsible for <strong>extending</strong> the user-centric schema with roles.</p>
+</blockquote>
+<p>That file includes 5 versions of the <code>IdentityDbContext</code> class. At the top of the file you&rsquo;ll see non-generic</p>
+
+
+
+
+
+<pre tabindex="0"><code>IdentityDbContext</code></pre><p>This is the most basic <code>IdentityDbContext</code> class, you&rsquo;d use this version in case you don&rsquo;t want to set your custom columns into the <code>IdentityUser</code>.</p>
+<p>But in our example we&rsquo;re using the generic version:</p>
+
+
+
+
+
+<pre tabindex="0"><code>IdentityDbContext&lt;TUser&gt;</code></pre><p>Notice, that non-generic <code>IdentityDbContext</code> and generic <code>IdentityDbContext&lt;TUser&gt;</code> both inherit from</p>
+
+
+
+
+
+<pre tabindex="0"><code>IdentityDbContext&lt;TUser, TRole, TKey&gt;</code></pre><p>But each of them handles the types of base class differently.</p>
+<p>The non-generic <code>IdentityDbContext</code></p>
+
+
+
+
+
+<pre tabindex="0"><code>IdentityDbContext : IdentityDbContext&lt;IdentityUser, IdentityRole, string&gt;</code></pre><p>sets the default type for <code>IdentityUser</code>, <code>IdentityRole</code> and primary key type as <code>string</code>.</p>
+<p>Conversely, the generic <code>IdentityDbContext&lt;TUser&gt;</code></p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln">1</span><span class="cl"><span class="n">IdentityDbContext</span><span class="p">&lt;</span><span class="n">TUser</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IdentityDbContext</span><span class="p">&lt;</span><span class="n">TUser</span><span class="p">,</span> <span class="n">IdentityRole</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> 
+</span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="k">where</span> <span class="n">TUser</span> <span class="p">:</span> <span class="n">IdentityUser</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="c1">// ☝️ Set the default type for TUser</span></span></span></code></pre></div><p>sets the generic type for <code>TUser</code> that must be a type of <code>IdentityUser</code>, so we can pass our own implementation of <code>IdentityUser</code> as we did right at the beginning of this post:</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln">1</span><span class="cl"><span class="c1">//                Our custom user of type IdentityUser     👇</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">ApplicationDbContext</span> <span class="p">:</span> <span class="n">IdentityDbContext</span><span class="p">&lt;</span><span class="n">ApplicationUser</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">   <span class="c1">// ...</span>
+</span></span><span class="line"><span class="ln">5</span><span class="cl"><span class="p">}</span></span></span></code></pre></div><p>Look carefully at the code in this file, you&rsquo;ll see that the chain of inheritance looks like this:</p>
+
+
+
+
+
+<pre tabindex="0"><code>   ... (We&#39;ll dive deeper into that chain in a second)
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey&gt;
+    ↑ 
+IdentityDbContext&lt;TUser&gt; &amp; IdentityDbContext
+    ↑
+ApplicationDbContext (which inherits from IdentityDbContext&lt;TUser&gt;)</code></pre><p><strong>But why do we need to have all of those variations of the <code>IdentityDbContext</code> class? Can&rsquo;t we just have non-generic one?</strong></p>
+<p>-&gt; The point of having different variations of the <code>IdentityDbContext</code> class is the ability to customize our roles in the way we want.</p>
+<p>Each variation of <code>IdentityDbContext</code> adds more specificity:</p>
+<ul>
+<li>
+<p><code>IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;</code> — the most abstract, allows you to replace all tables with your own implementations (we&rsquo;ll examine that class in a second).</p>
+</li>
+<li>
+<p><code>IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt;</code> - sets the standard type for (<code>TUserPasskey</code>), but leaves you free to customize <code>TUser, TRole, TKey, TUserClaim, TUserRole ...</code></p>
+</li>
+<li>
+<p><code>IdentityDbContext&lt;TUser, TRole, TKey&gt;</code> —
+sets the standard types for relationships (<code>UserRole</code>, <code>Claim</code>, <code>Token</code>), but leaves you free to customize <code>&lt;TUser, TRole, TKey&gt;</code>.</p>
+</li>
+<li>
+<p><code>IdentityDbContext&lt;TUser&gt;</code> — sets the standard <code>IdentityRole</code> and string as a key, leaving freedom only for the custom TUser.</p>
+</li>
+<li>
+<p><code>IdentityDbContext (non-generic)</code> — only default implementation.</p>
+</li>
+</ul>
+<p>Now, let&rsquo;s check the most flexible <code>IdentityDbContext</code> class (the top class in the chain above) and its inner logic.</p>
+<p>If you follow the implementation of the <code>OnModelCreating()</code> from the initial code:</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">ApplicationDbContext</span> <span class="p">:</span> <span class="n">IdentityDbContext</span><span class="p">&lt;</span><span class="n">ApplicationUser</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">    <span class="c1">// ...</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">    <span class="kd">protected</span> <span class="kd">override</span> <span class="k">void</span> <span class="n">OnModelCreating</span><span class="p">(</span><span class="n">ModelBuilder</span> <span class="n">builder</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">        <span class="c1">//👇 Dive here</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">        <span class="k">base</span><span class="p">.</span><span class="n">OnModelCreating</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">        <span class="n">builder</span><span class="p">.</span><span class="n">ApplyConfigurationsFromAssembly</span><span class="p">(</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetExecutingAssembly</span><span class="p">());</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="p">}</span></span></span></code></pre></div><p>The chain looks like this:</p>
+<blockquote>
+<p>✅ <code>OnModelCreating()</code> method is present</p>
+</blockquote>
+<blockquote>
+<p>❌<code>OnModelCreating()</code> method is <strong>not</strong> present</p>
+</blockquote>
+
+
+
+
+
+<pre tabindex="0"><code>   ... (We&#39;ll dive deeper into that chain in a second)
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt; // 👈 ✅OnModelCreating()
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt; // 👈 ❌ OnModelCreating()
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey&gt; // 👈 ❌ OnModelCreating()
+    ↑ 
+IdentityDbContext&lt;TUser&gt; // 👈 ❌ OnModelCreating()
+    ↑
+ApplicationDbContext // 👈 ✅OnModelCreating()</code></pre><p>You&rsquo;ll land in the topmost class with an override - back to our most flexible <code>IdentityDbContext</code>:</p>
+
+
+
+
+
+<pre tabindex="0"><code>IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;</code></pre><p>Notice see that it has a logic for those methods:</p>
+<ul>
+<li><code>OnModelCreating()</code>
+<ul>
+<li>calls <code>base.OnModelCreating(builder)</code>, passing the builder object up to the parent</li>
+</ul>
+</li>
+<li><code>OnModelCreatingVersion3()</code></li>
+<li><code>OnModelCreatingVersion2()</code></li>
+<li><code>OnModelCreatingVersion1()</code></li>
+</ul>
+<p>Keep in mind that all of those methods are being overriden by this class, meaning its base class <code>IdentityUserContext</code> - defines the <code>virtual</code> versions of these methods, providing the base implementation.</p>
+<p><strong>But why do we need to have 3 different versions of the same <code>OnModelCreatingVersion_()</code>? Can&rsquo;t we just use one version?</strong></p>
+<p>-&gt; These three versions of <code>OnModelCreatingVersion_()</code> are all about versioning the Identity database schema to avoid breaking older applications during upgrades.</p>
+<p>Imagine you created your database schema several years ago using an older version of Identity. Later, you upgrade your project to a newer version with updated <code>DbContext</code> types.</p>
+<p>By keeping separate schema versions, Identity ensures that older databases continue to work correctly even after update.</p>
+<p>By default Identity uses the latest <code>OnModelCreatingVersion3()</code> version inside of the <code>IdentityDbContext&lt;...&gt;</code> parent class - <code>IdentityUserContext</code></p>
+<blockquote>
+<p>Although it is technically possible to target an earlier version, using the latest one is strongly recommended for new projects. We&rsquo;ll take a look at the source code of <code>IdentityUserContext</code> to understand how the schema version is selected in a second.</p>
+</blockquote>
+<p>Now, lets examine that topmost <code>IdentityDbContext&lt;...&gt;</code> class.</p>
+<blockquote>
+<p>I&rsquo;ve intentionally ommitted most of the source code, as the key part is the <code>OnModelCreating()</code> and <code>OnModelCreatingVersion3()</code> logic inside of it.</p>
+</blockquote>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kd">public</span> <span class="kd">abstract</span> <span class="k">class</span> <span class="nc">IdentityDbContext</span><span class="p">&lt;</span><span class="n">TUser</span><span class="p">,</span> <span class="n">TRole</span><span class="p">,</span> <span class="n">TKey</span><span class="p">,</span> <span class="n">TUserClaim</span><span class="p">,</span> <span class="p">...&gt;</span> 
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="p">:</span> <span class="n">IdentityUserContext</span><span class="p">&lt;</span><span class="n">TUser</span><span class="p">,</span> <span class="n">TKey</span><span class="p">,</span> <span class="n">TUserClaim</span><span class="p">,</span> <span class="p">...&gt;</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="c1">//   ☝️ Parent class</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">    <span class="c1">//...</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">    
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">    <span class="kd">protected</span> <span class="kd">override</span> <span class="k">void</span> <span class="n">OnModelCreating</span><span class="p">(</span><span class="n">ModelBuilder</span> <span class="n">builder</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">        <span class="k">base</span><span class="p">.</span><span class="n">OnModelCreating</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span><span class="c1">// 👈 Delegate to the parent</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl">
+</span></span><span class="line"><span class="ln">12</span><span class="cl">    <span class="kd">internal</span> <span class="kd">override</span> <span class="k">void</span> <span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">ModelBuilder</span> <span class="n">builder</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln">13</span><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="ln">14</span><span class="cl">        <span class="k">base</span><span class="p">.</span><span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span> <span class="c1">// 👈 Delegate to the parent and perform its own logic below</span>
+</span></span><span class="line"><span class="ln">15</span><span class="cl">
+</span></span><span class="line"><span class="ln">16</span><span class="cl">        <span class="n">builder</span><span class="p">.</span><span class="n">Entity</span><span class="p">&lt;</span><span class="n">TUser</span><span class="p">&gt;(</span><span class="n">b</span> <span class="p">=&gt;</span>
+</span></span><span class="line"><span class="ln">17</span><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="ln">18</span><span class="cl">            <span class="c1">// fluent API that mutates the builder object.</span>
+</span></span><span class="line"><span class="ln">19</span><span class="cl">        <span class="p">});</span>
+</span></span><span class="line"><span class="ln">20</span><span class="cl">
+</span></span><span class="line"><span class="ln">21</span><span class="cl">        <span class="c1">// ...</span>
+</span></span><span class="line"><span class="ln">22</span><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="ln">23</span><span class="cl"><span class="p">}</span></span></span></code></pre></div><p>First, notice that in <code>OnModelCreating(ModelBuilder builder)</code>, this class simply delegates the execution to the base implementation:</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln">1</span><span class="cl"><span class="k">base</span><span class="p">.</span><span class="n">OnModelCreating</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span> 
+</span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="c1">//☝️ Delegate to the parent</span></span></span></code></pre></div><p>The same pattern appears in <code>OnModelCreatingVersion3(ModelBuilder builder)</code>:</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln">1</span><span class="cl"> <span class="kd">internal</span> <span class="kd">override</span> <span class="k">void</span> <span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">ModelBuilder</span> <span class="n">builder</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl">        <span class="k">base</span><span class="p">.</span><span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">        
+</span></span><span class="line"><span class="ln">5</span><span class="cl">        <span class="c1">// Perform its own implementation after the parent logic</span>
+</span></span><span class="line"><span class="ln">6</span><span class="cl">    <span class="p">}</span></span></span></code></pre></div><blockquote>
+<p>As well as <code>OnModelCreatingVersion3()</code> other versions: 2 and 1 are delegating the execution to the parent.</p>
+</blockquote>
+<p>This is important as it shows that the actual version-selection logic and core configuration are defined in the base class (<code>IdentityUserContext</code>), while <code>IdentityDbContext</code> only extends that configuration providing the roles schema.</p>
+<p>Now, before diving into the <code>IdentityUserContext</code> class, lets revisit our chain of inheritance and to understand where <code>IdentityDbContext</code> fits with its parent classs - <code>IdentityUserContext</code></p>
+
+
+
+
+
+<pre tabindex="0"><code>   ...
+    ↑
+IdentityUserContext&lt;TUser, TKey, TUserClaim, TUserLogin, TUserToken, TUserPasskey&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey&gt;
+    ↑ 
+IdentityDbContext&lt;TUser&gt; &amp; IdentityDbContext
+    ↑
+ApplicationDbContext</code></pre><hr>
+<p>Now, lets move one level up and examine the parent class - <code>IdentityUserContext</code>.</p>
+<p>As the name suggests, this class is responsible for configuring the <strong>user-related</strong> part of the Identity schema. In contrast, <code>IdentityDbContext</code> <strong>builds on top of it and adds support for roles</strong> and related entities.</p>
+<p>When you navigate to the source code of <code>IdentityUserContext</code>, you&rsquo;ll find multiple generic variations of the class. Similar to <code>IdentityDbContext</code>, they form an internal inheritance chain:</p>
+
+
+
+
+
+<pre tabindex="0"><code>   👇 Pparent class
+ DbContext
+    ↑
+IdentityUserContext&lt;TUser, TKey, TUserClaim, TUserLogin, TUserToken, TUserPasskey&gt;
+    ↑
+IdentityUserContext&lt;TUser, TKey, TUserClaim, TUserLogin, TUserToken&gt;
+    ↑
+IdentityUserContext&lt;TUser, TKey&gt;
+    ↑
+IdentityUserContext&lt;TUser&gt;</code></pre><p>Now, lets take a look at the implementation of the</p>
+<ul>
+<li><code>OnModelCreating()</code></li>
+<li><code>OnModelCreatingVersion()</code> (which contains version-selection logic)</li>
+<li><code>OnModelCreatingVersion3()</code></li>
+</ul>
+<blockquote>
+<p>As in the previous examples, most of the source code is omitted. The focus here is on OnModelCreating() and the version-selection logic.</p>
+</blockquote>
+<p>First, lets examine <code>OnModelCreating()</code>:</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln">1</span><span class="cl"><span class="kd">protected</span> <span class="kd">override</span> <span class="k">void</span> <span class="n">OnModelCreating</span><span class="p">(</span><span class="n">ModelBuilder</span> <span class="n">builder</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl">    <span class="kt">var</span> <span class="n">version</span> <span class="p">=</span> <span class="n">GetStoreOptions</span><span class="p">()?.</span><span class="n">SchemaVersion</span> <span class="p">??</span> <span class="n">IdentitySchemaVersions</span><span class="p">.</span><span class="n">Version1</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">    <span class="n">OnModelCreatingVersion</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span> <span class="n">version</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">5</span><span class="cl"><span class="p">}</span></span></span></code></pre></div><p>This line defines which schema version Identity will use:</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln">1</span><span class="cl"><span class="kt">var</span> <span class="n">version</span> <span class="p">=</span> <span class="n">GetStoreOptions</span><span class="p">()?.</span><span class="n">SchemaVersion</span> 
+</span></span><span class="line"><span class="ln">2</span><span class="cl">              <span class="p">??</span> <span class="n">IdentitySchemaVersions</span><span class="p">.</span><span class="n">Version1</span><span class="p">;</span></span></span></code></pre></div><p>If no schema version is explicitly configured, Identity falls back to a default value and ultimately uses the latest supported schema version (currently Version3).</p>
+<p>This means that in most cases, you do not need to manually specify the schema version — the framework will automatically select the appropriate one.</p>
+<p>Next, let&rsquo;s examine <code>OnModelCreatingVersion()</code>, where the internal version-selection logic is implemented:</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kd">internal</span> <span class="k">virtual</span> <span class="k">void</span> <span class="n">OnModelCreatingVersion</span><span class="p">(</span><span class="n">ModelBuilder</span> <span class="n">builder</span><span class="p">,</span> <span class="n">Version</span> <span class="n">schemaVersion</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">schemaVersion</span> <span class="p">&gt;=</span> <span class="n">IdentitySchemaVersions</span><span class="p">.</span><span class="n">Version3</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">        <span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">schemaVersion</span> <span class="p">&gt;=</span> <span class="n">IdentitySchemaVersions</span><span class="p">.</span><span class="n">Version2</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">        <span class="n">OnModelCreatingVersion2</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl">    <span class="k">else</span>
+</span></span><span class="line"><span class="ln">12</span><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="ln">13</span><span class="cl">        <span class="n">OnModelCreatingVersion1</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+</span></span><span class="line"><span class="ln">14</span><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="p">}</span></span></span></code></pre></div><p>Here, the schemaVersion value (resolved in the previous step) determines which version-specific method will be executed. By default (and in our case), it leads to a call to <code>OnModelCreatingVersion3(builder)</code>.</p>
+<p>Since <code>OnModelCreatingVersion3()</code> is a <strong><code>virtual</code></strong> method, the actual implementation that runs first is the <code>override</code> in <code>IdentityDbContext</code>:</p>
+
+
+
+
+
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="ln">1</span><span class="cl"><span class="kd">internal</span> <span class="kd">override</span> <span class="k">void</span> <span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">ModelBuilder</span> <span class="n">builder</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl">    <span class="k">base</span><span class="p">.</span><span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span> <span class="c1">// 👈 Delegate to the parent</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">
+</span></span><span class="line"><span class="ln">5</span><span class="cl">    <span class="c1">// ...</span>
+</span></span><span class="line"><span class="ln">6</span><span class="cl"><span class="p">}</span></span></span></code></pre></div><p>This means execution flows back to <code>IdentityDbContext</code>, where additional configuration is applied on top of the base identity schema.</p>
+<p>When <code>OnModelCreatingVersion3()</code> is executed, the call to <code>base.OnModelCreatingVersion3()</code> ensures that the base class (<code>IdentityUserContext</code>) contributes its configuration to the same <code>ModelBuilder builder</code> object.</p>
+<p><code>IdentityUserContext</code> adds the core <strong>user-related</strong> entities, while <code>IdentityDbContext</code> extends the same model with <strong>role-related</strong> entities such as roles, user roles, and role claims.</p>
+<p>After the base class logic is executed, <code>IdentityDbContext</code> continues execution and applies its own configuration on top of the existing model.</p>
+<p>In this way, the same <code>ModelBuilder</code> instance is incrementally configured as it <strong>&ldquo;flows&rdquo;</strong> through the inheritance chain of contexts.</p>
+<hr>
+<p>Lets revisit the full version of our chain of inheritance, so you can actually see where each actual class fits:</p>
+
+
+
+
+
+<pre tabindex="0"><code>DbContext
+    ↑
+IdentityUserContext&lt;...&gt;  &lt;────────────── IdentityDbContext&lt;...&gt;
+    ↑                                           ↑
+IdentityUserContext&lt;TUser, TKey, ...&gt;       IdentityDbContext&lt;TUser, TRole, TKey, ...&gt;
+    ↑                                           ↑
+IdentityUserContext&lt;TUser, TKey&gt;            IdentityDbContext&lt;TUser, TRole, TKey&gt;
+    ↑                                           ↑
+IdentityUserContext&lt;TUser&gt;                  IdentityDbContext&lt;TUser&gt; &amp; IdentityDbContext
+                                                ↑
+                                            ApplicationDbContext</code></pre><p>This entire process demonstrates how the <code>ModelBuilder</code> is progressively configured through multiple layers of Identity before being finalized into a metadata model, which EF Core later uses to generate SQL for the application.</p>
+<p>I strongly recommend to read the article about <a href="https://medium.com/@a.kago1988/the-model-metadata-graph-entity-frameworks-intermediate-representation-ir-590397e00e51">EF Core’s Internal Data Representation</a></p>
+<p>That&rsquo;s it for today, thanks for reading :)</p>
+]]></content:encoded>
+    </item>
   </channel>
 </rss>

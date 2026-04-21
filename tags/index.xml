@@ -9,6 +9,31 @@
     <managingEditor>d.shved.wrk@gmail.com (Dmytro Shved)</managingEditor>
     <webMaster>d.shved.wrk@gmail.com (Dmytro Shved)</webMaster>
     <copyright>© 2026. All rights reserved</copyright>
+    <lastBuildDate>Tue, 21 Apr 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://dmytroshved.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Asp.net Core</title>
+      <link>http://dmytroshved.com/tags/asp.net-core/</link>
+      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate><author>d.shved.wrk@gmail.com (Dmytro Shved)</author>
+      <guid>http://dmytroshved.com/tags/asp.net-core/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    <item>
+      <title>Asp.net Core Identity</title>
+      <link>http://dmytroshved.com/tags/asp.net-core-identity/</link>
+      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate><author>d.shved.wrk@gmail.com (Dmytro Shved)</author>
+      <guid>http://dmytroshved.com/tags/asp.net-core-identity/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    <item>
+      <title>Ef Core</title>
+      <link>http://dmytroshved.com/tags/ef-core/</link>
+      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate><author>d.shved.wrk@gmail.com (Dmytro Shved)</author>
+      <guid>http://dmytroshved.com/tags/ef-core/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
   </channel>
 </rss>

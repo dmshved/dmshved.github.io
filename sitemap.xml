@@ -3,9 +3,26 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://dmytroshved.com/</loc>
+    <lastmod>2026-04-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://dmytroshved.com/categories/</loc>
+    <loc>http://dmytroshved.com/blog/</loc>
+    <lastmod>2026-04-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://dmytroshved.com/tags/asp.net-core/</loc>
+    <lastmod>2026-04-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://dmytroshved.com/tags/asp.net-core-identity/</loc>
+    <lastmod>2026-04-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://dmytroshved.com/blog/identity-dbcontext/</loc>
+    <lastmod>2026-04-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://dmytroshved.com/tags/ef-core/</loc>
+    <lastmod>2026-04-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://dmytroshved.com/tags/</loc>
+    <lastmod>2026-04-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://dmytroshved.com/categories/</loc>
   </url>
 </urlset>
