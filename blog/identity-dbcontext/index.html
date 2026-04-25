@@ -60,7 +60,7 @@
 <meta itemprop="name" content="Deep dive into DbContext in ASP.NET Core Identity">
 <meta itemprop="description" content="ModelBuilder is progressively configured through multiple layers of Identity before being finalized into a metadata model, which EF Core later uses to generate SQL for the application"><meta itemprop="datePublished" content="2026-04-21T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2026-04-21T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1849">
+<meta itemprop="wordCount" content="1839">
 
 <meta itemprop="image" content="http://dmytroshved.com/images/social_card_bg_hu_9b0cab6450c2b951.webp"/>
 
@@ -286,27 +286,27 @@ sets the standard types for relationships (<code>UserRole</code>, <code>Claim</c
 </span></span><span class="line"><span class="ln">10</span><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="p">}</span></span></span></code></pre></div><p>The chain looks like this:</p>
 <blockquote>
-<p>✅ <code>OnModelCreating()</code> method is present</p>
+<p>✅ - <code>OnModelCreating()</code> method is present</p>
 </blockquote>
 <blockquote>
-<p>❌<code>OnModelCreating()</code> method is <strong>not</strong> present</p>
+<p>❌ - <code>OnModelCreating()</code> method is <strong>not</strong> present</p>
 </blockquote>
 
 
 
 
 
-<pre tabindex="0"><code>   ... (We&#39;ll dive deeper into that chain in a second)
-    ↑
-IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt; // 👈 ✅OnModelCreating()
-    ↑
-IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt; // 👈 ❌ OnModelCreating()
-    ↑
-IdentityDbContext&lt;TUser, TRole, TKey&gt; // 👈 ❌ OnModelCreating()
-    ↑ 
-IdentityDbContext&lt;TUser&gt; // 👈 ❌ OnModelCreating()
-    ↑
-ApplicationDbContext // 👈 ✅OnModelCreating()</code></pre><p>You&rsquo;ll land in the topmost class with an override - back to our most flexible <code>IdentityDbContext</code>:</p>
+<pre tabindex="0"><code>       ... (We&#39;ll dive deeper into that chain in a second)
+        ↑
+✅ IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;
+        ↑
+❌ IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt;
+        ↑
+❌ IdentityDbContext&lt;TUser, TRole, TKey&gt; 
+        ↑ 
+❌ IdentityDbContext&lt;TUser&gt; 
+        ↑
+✅ ApplicationDbContext</code></pre><p>You&rsquo;ll land in the topmost class with an override - back to our most flexible <code>IdentityDbContext</code>:</p>
 
 
 
