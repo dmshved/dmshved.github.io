@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on Dmytro Shved</title>
-    <link>http://dmytroshved.com/tags/</link>
+    <link>http://localhost:1313/tags/</link>
     <description>Recent content in Tags on Dmytro Shved</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
@@ -10,28 +10,28 @@
     <webMaster>d.shved.wrk@gmail.com (Dmytro Shved)</webMaster>
     <copyright>© 2026. All rights reserved</copyright>
     <lastBuildDate>Tue, 21 Apr 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://dmytroshved.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Asp.net Core</title>
-      <link>http://dmytroshved.com/tags/asp.net-core/</link>
+      <link>http://localhost:1313/tags/asp.net-core/</link>
       <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate><author>d.shved.wrk@gmail.com (Dmytro Shved)</author>
-      <guid>http://dmytroshved.com/tags/asp.net-core/</guid>
+      <guid>http://localhost:1313/tags/asp.net-core/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     <item>
       <title>Asp.net Core Identity</title>
-      <link>http://dmytroshved.com/tags/asp.net-core-identity/</link>
+      <link>http://localhost:1313/tags/asp.net-core-identity/</link>
       <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate><author>d.shved.wrk@gmail.com (Dmytro Shved)</author>
-      <guid>http://dmytroshved.com/tags/asp.net-core-identity/</guid>
+      <guid>http://localhost:1313/tags/asp.net-core-identity/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     <item>
       <title>Ef Core</title>
-      <link>http://dmytroshved.com/tags/ef-core/</link>
+      <link>http://localhost:1313/tags/ef-core/</link>
       <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate><author>d.shved.wrk@gmail.com (Dmytro Shved)</author>
-      <guid>http://dmytroshved.com/tags/ef-core/</guid>
+      <guid>http://localhost:1313/tags/ef-core/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
