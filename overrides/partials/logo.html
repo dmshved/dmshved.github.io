@@ -1,0 +1,8 @@
+{% if config.theme.logo %}
+<div class="rounded-full">
+  <img src="{{ config.theme.logo | url }}" alt="logo" />
+</div>
+{% else %}
+  {% set icon = config.theme.icon.logo or "material/library" %}
+  {% include ".icons/" ~ icon ~ ".svg" %}
+{% endif %}
