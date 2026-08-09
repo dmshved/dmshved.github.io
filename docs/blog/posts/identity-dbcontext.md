@@ -1,5 +1,7 @@
 ---
 date: 2026-04-21
+hide:
+  - toc
 categories:
     - ASP.NET Core
     - ASP.NET Core Identity
@@ -393,22 +395,6 @@ After the base class logic is executed, `IdentityDbContext` continues execution 
 In this way, the same `ModelBuilder` instance is incrementally configured as it **"flows"** through the inheritance chain of contexts.
 
 ---
-
-Lets revisit the full version of our chain of inheritance, so you can actually see where each actual class fits:
-
-```
-DbContext
-    ↑
-IdentityUserContext<...>  <────────────── IdentityDbContext<...>
-    ↑                                           ↑
-IdentityUserContext<TUser, TKey, ...>       IdentityDbContext<TUser, TRole, TKey, ...>
-    ↑                                           ↑
-IdentityUserContext<TUser, TKey>            IdentityDbContext<TUser, TRole, TKey>
-    ↑                                           ↑
-IdentityUserContext<TUser>                  IdentityDbContext<TUser> & IdentityDbContext
-                                                ↑
-                                            ApplicationDbContext
- ```
 
  This entire process demonstrates how the `ModelBuilder` is progressively configured through multiple layers of Identity before being finalized into a metadata model, which EF Core later uses to generate SQL for the application.
 

@@ -1,5 +1,7 @@
 ---
 date: 2026-06-06
+hide:
+  - toc
 categories:
     - Deep Dive
     - ASP.NET Core
