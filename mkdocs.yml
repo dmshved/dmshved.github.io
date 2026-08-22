@@ -1,5 +1,7 @@
 site_name: Dmytro Shved
 
+# Segoe UI
+
 site_url: https://dmytroshved.com
 markdown_extensions:
     - admonition

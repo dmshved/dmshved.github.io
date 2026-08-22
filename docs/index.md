@@ -21,8 +21,6 @@ When I learn something, I always **dive deep into how things work**.
 I believe in the open-source and Linux philosophy. I enjoy solving complex problems and building projects with clean, readable, and
 scalable code. You can mostly find me by the smell of coffee, working on my laptop and listening to lofi beats :)
 
-Here I share clear and practical explanations of ASP.NET Core and .NET topics. My goal is to make complex things understandable - especially for developers who are still finding their way. I try to keep explanations simple, support them with diagrams and examples, and go deep enough so the topic actually clicks. If you find any mistakes or have feedback - don’t hesitate to contact me. We’re all still learning.
-
 ---
 
 ## **Currentlry working on:**
