@@ -1,7 +1,5 @@
 site_name: Dmytro Shved
 
-# Segoe UI
-
 site_url: https://dmytroshved.com
 markdown_extensions:
     - admonition
@@ -53,9 +51,8 @@ theme:
       toggle:
         icon: material/lightbulb
         name: Switch to dark mode
-  font:
-    # text: Inter
-    text: Inter
+  # font:
+  #   text: Segoe UI
 
 nav:
   - Home:
