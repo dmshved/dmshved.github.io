@@ -1,0 +1,2529 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://dmytroshved.com/blog/2026/06/06/deep-dive-into-openapi-in-aspnet-core/">
+      
+      
+        <link rel="prev" href="../../../04/21/look-behind-dbcontext-in-aspnet-core-identity/">
+      
+      
+      
+        
+      
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../feed_rss_updated.xml">
+      
+      <link rel="icon" href="../../../../../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Deep dive into OpenApi in ASP.NET Core - Dmytro Shved</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Deep dive into OpenApi in ASP.NET Core - Dmytro Shved" />
+<meta property="og:description" content="Backend Developer" />
+<meta property="og:image" content="https://dmytroshved.com/assets/images/social/blog/2026/06/06/deep-dive-into-openapi-in-aspnet-core.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://dmytroshved.com/blog/2026/06/06/deep-dive-into-openapi-in-aspnet-core/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Deep dive into OpenApi in ASP.NET Core - Dmytro Shved" />
+<meta property="twitter:description" content="Backend Developer" />
+<meta property="twitter:image" content="https://dmytroshved.com/assets/images/social/blog/2026/06/06/deep-dive-into-openapi-in-aspnet-core.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deep-dive-into-openapi-in-aspnet-core" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="Dmytro Shved" class="md-header__button md-logo" aria-label="Dmytro Shved" data-md-component="logo">
+      
+<div class="rounded-full">
+  <img src="../../../../../assets/logo.jpg" alt="logo" />
+</div>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Dmytro Shved
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Deep dive into OpenApi in ASP.NET Core
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.." class="md-tabs__link">
+          
+  
+  
+  Home
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../../" class="md-tabs__link">
+          
+  
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<!-- Determine classes -->
+
+
+  
+
+
+
+<!-- Navigation -->
+<nav
+  class="md-nav md-nav--primary md-nav--lifted"
+  aria-label="Navigation"
+  data-md-level="0"
+>
+
+  <!-- Site title -->
+  <label class="md-nav__title" for="__drawer">
+    <a
+      href="../../../../.."
+      title="Dmytro Shved"
+      class="md-nav__button md-logo"
+      aria-label="Dmytro Shved"
+      data-md-component="logo"
+    >
+      
+<div class="rounded-full">
+  <img src="../../../../../assets/logo.jpg" alt="logo" />
+</div>
+
+    </a>
+    Dmytro Shved
+  </label>
+
+  <!-- Repository information -->
+  
+
+  <!-- Navigation list -->
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Home
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blog
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Blog
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/aspnet-core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASP.NET Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/aspnet-core-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASP.NET Core Identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/ef-core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EF Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/openapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenApi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-openapi-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What OpenAPI is?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-does-it-brings-to-the-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What does it brings to the table?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-openapi-was-integrated-in-aspnet-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How OpenAPI was integrated in ASP.NET Core?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openapi-structure-and-naming-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI structure and naming conventions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OpenAPI structure and naming conventions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#openapi-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openapi-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI information
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openapi-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI servers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openapi-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openapi-http-request-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI HTTP request methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openapi-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openapi-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI responses
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OpenAPI responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "description"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "content"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#textplain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "text/plain"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "schema"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openapi-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPI parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customize-the-openapi-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customize the OpenAPI document
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customize the OpenAPI document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-different-openapi-document-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use different OpenAPI document format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customize-the-openapi-document-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customize the OpenAPI document name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customize-the-openapi-endpoint-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customize the OpenAPI endpoint route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generate-multiple-openapi-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate multiple OpenAPI documents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generate-openapi-documents-at-build-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate OpenAPI documents at build time
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customize-the-openapi-document-using-transformers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customize the OpenAPI document using transformers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customize the OpenAPI document using transformers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transformers-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transformers structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformer-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transformer parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transformer parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#openapidocument-openapioperation-openapischema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenApiDocument | OpenApiOperation | OpenApiSchema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openapidocumenttransformercontext-openapioperationtransformercontext-openapischematransformercontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenApiDocumentTransformerContext | OpenApiOperationTransformerContext | OpenApiSchemaTransformerContext
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancellationtoken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CancellationToken
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ways-to-register-the-transformers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ways to register the transformers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execution-order-for-transformers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution order for transformers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-api-generation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open API generation pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-document-transformers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Document transformers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use Document transformers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bearer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "Bearer"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "type": "http"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheme-bearer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "scheme": "bearer"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bearerformat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "bearerFormat"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-operation-transformers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Operation transformers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-schema-transformers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Schema transformers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-the-ui-using-scalar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate the UI using Scalar
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2026-06-06 00:00:00+00:00" class="md-ellipsis">June 6, 2026</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3zm3 2 4 13 3-1-4-13zM5 5v13h3V5zM3 19v2h18v-2z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../../../../category/deep-dive/">Deep Dive</a>, 
+                              <a href="../../../../category/aspnet-core/">ASP.NET Core</a>, 
+                              <a href="../../../../category/openapi/">OpenApi</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              17 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+
+
+
+
+<h1 id="deep-dive-into-openapi-in-aspnet-core"><strong>Deep dive into OpenApi in ASP.NET Core</strong><a class="headerlink" href="#deep-dive-into-openapi-in-aspnet-core" title="Permanent link">#</a></h1>
+<p>In this post I'll dive into the OpenAPI, we'll explore what OpenAPI is, why it was created, and how OpenAPI was integrated in ASP.NET Core. <!-- more --> By the end of this post, you’ll feel more confident about documenting your API.</p>
+<p>Well, lets dive in!</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">#</a></h2>
+<ol>
+<li><a href="#what-openapi-is">What OpenAPI is?</a></li>
+<li><a href="#what-does-it-brings-to-the-table">What does it brings to the table?</a></li>
+<li><a href="#how-openapi-was-integrated-in-aspnet-core">How OpenAPI was integrated in ASP.NET Core?</a></li>
+<li><a href="#openapi-structure-and-naming-conventions">OpenAPI structure and naming conventions</a></li>
+<li><a href="#openapi-version">OpenAPI version</a></li>
+<li><a href="#openapi-information">OpenAPI information</a></li>
+<li><a href="#openapi-servers">OpenAPI servers</a></li>
+<li><a href="#openapi-paths">OpenAPI paths</a></li>
+<li><a href="#openapi-http-request-methods">OpenAPI HTTP request methods</a></li>
+<li><a href="#openapi-tags">OpenAPI tags</a></li>
+<li><a href="#openapi-responses">OpenAPI responses</a></li>
+<li><a href="#openapi-parameters">OpenAPI parameters</a></li>
+<li><a href="#customize-the-openapi-document">Customize the OpenAPI document</a></li>
+<li><a href="#use-different-openapi-document-format">Use different OpenAPI document format</a></li>
+<li><a href="#customize-the-openapi-document-name">Customize the OpenAPI document name</a></li>
+<li><a href="#customize-the-openapi-endpoint-route">Customize the OpenAPI endpoint route</a></li>
+<li><a href="#generate-multiple-openapi-documents">Generate multiple OpenAPI documents</a></li>
+<li><a href="#generate-openapi-documents-at-build-time">Generate OpenAPI documents at build time</a></li>
+<li><a href="#customize-the-openapi-document-using-transformers">Customize the OpenAPI document using transformers</a><ul>
+<li><a href="#transformers-structure">Transformers structure</a></li>
+<li><a href="#transformer-parameters">Transformer parameters</a></li>
+<li><a href="#ways-to-register-the-transformers">Ways to register the transformers</a></li>
+<li><a href="#execution-order-for-transformers">Execution order for transformers</a></li>
+</ul>
+</li>
+<li><a href="#open-api-generation-pipeline">Open API generation pipeline</a></li>
+<li><a href="#use-document-transformers">Use Document transformers</a></li>
+<li><a href="#use-operation-transformers">Use Operation transformers</a></li>
+<li><a href="#use-schema-transformers">Use Schema transformers</a></li>
+<li><a href="#generate-the-ui-using-scalar">Generate the UI using Scalar</a></li>
+</ol>
+<hr />
+<h2 id="what-openapi-is">What OpenAPI is?<a class="headerlink" href="#what-openapi-is" title="Permanent link">#</a></h2>
+<p>Lets clarify one simple question - "What OpenAPI is?". <strong>OpenAPI</strong> is just a way to document HTTP APIs so it can be understood by humans as well as computers, to be readable by both humans and computers we need a proper format - <strong>OpenAPI</strong> creators decided to use <code>JSON</code> or <code>YAML</code> since those formats are well-known and widely used.</p>
+<hr />
+<h2 id="what-does-it-brings-to-the-table">What does it brings to the table?<a class="headerlink" href="#what-does-it-brings-to-the-table" title="Permanent link">#</a></h2>
+<p><strong>OpenAPI</strong> is a standart, it can be compared to another standarts like <strong>Git</strong> for source control or <strong>HTTP</strong> protocol for web, it's just a way to standardize an API documentation format so potentially every human and computer will understand it reducing issues with compatibility (imagine if there was 10 various API specification standarts - which one to use? Will this library for creating UI work with that specification? What if I need to swith to another library? Will it support my current document?).</p>
+<hr />
+<h2 id="how-openapi-was-integrated-in-aspnet-core">How OpenAPI was integrated in ASP.NET Core?<a class="headerlink" href="#how-openapi-was-integrated-in-aspnet-core" title="Permanent link">#</a></h2>
+<p>There is three key aspects for integrating OpenAPI specification in ASP.NET Core:</p>
+<ul>
+<li>Generating information about the endpoints in the app.</li>
+<li>Gathering the information into a format that matches the OpenAPI schema.</li>
+<li>Exposing the generated OpenAPI document through a visual UI or a serialized file.</li>
+</ul>
+<p>To complete 1 and 2 aspects Microsoft introduced <a href="https://www.nuget.org/packages/Microsoft.AspNetCore.OpenApi">Microsoft.AspNetCore.OpenApi</a> package, the last one was delegated to the third-party libraries like <a href="https://scalar.com/">Scalar</a>.</p>
+<p>Let's see a practical example to understand it more deeply, look at this simple <code>Program.cs</code> file:</p>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebApplication</span><span class="p">.</span><span class="n">CreateBuilder</span><span class="p">();</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">();</span><span class="w"> </span><span class="c1">// 👈️</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">Environment</span><span class="p">.</span><span class="n">IsDevelopment</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">MapOpenApi</span><span class="p">();</span><span class="w"> </span><span class="c1">// 👈️</span>
+<span class="p">}</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">UseHttpsRedirection</span><span class="p">();</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/posts&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;get posts&quot;</span><span class="p">);</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</code></pre></div>
+<p>Meaning:</p>
+<p><code>builder.Services.AddOpenApi()</code> - registers services required for <strong>OpenAPI</strong> document generation into the application's DI container.</p>
+<p><code>app.MapOpenApi();</code> - adds an endpoint into the application for viewing the OpenAPI document serialized into <code>JSON</code> (restricted to the <code>Development</code> environment unavailable in production).</p>
+<p>If you run the application</p>
+<div class="highlight"><pre><span></span><code>dotnet run --launch-profile https
+</code></pre></div>
+<p>and open the <code>https://localhost:5001/openapi/v1.json</code></p>
+<p><em>(In this case I'm using port <code>5001</code>, change the port if needed)</em></p>
+<p>You'll see this output in <code>JSON</code> format:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;openapi&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.1.1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;demo | v1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;servers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://localhost:5001/&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;/posts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="s2">&quot;demo&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;responses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;200&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;text/plain&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">              </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;demo&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This is an <strong>OpenAPI</strong> documentation, third-party libraries like Scalar are utilizing it to render the UI, for the sake of simplicity it's contains 1 <code>GET /posts</code> endpoint that returns <code>"get posts"</code>.</p>
+<hr />
+<h2 id="openapi-structure-and-naming-conventions">OpenAPI structure and naming conventions<a class="headerlink" href="#openapi-structure-and-naming-conventions" title="Permanent link">#</a></h2>
+<p>You can customize every section in the OpenAPI documentation as you prefer, however, before customizing the document, I’ll first give you a clear and deep explanation of every section inside the <strong>OpenAPI</strong> specification and what each one is responsible for.</p>
+<h3 id="openapi-version">OpenAPI version<a class="headerlink" href="#openapi-version" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;openapi&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.1.1&quot;</span>
+</code></pre></div>
+<p>The first key-value pair describes the version of the specification that is being used. It's important to know, that by the time I'm typing this text the latest version of <strong>OpenAPI</strong> specification is <a href="https://spec.openapis.org/oas/latest.html">v3.2.0</a>.</p>
+<p>The fact is that the existence of version <strong>v3.2.0+</strong> does not guarantee that tools such as ASP.NET Core, libraries, Scalar, Swagger etc. are already supporting it. The point is that a standard like <strong>OpenAPI</strong> is slow-moving, and changes to the specification and its structure lead to inevitable breaking changes, which break libraries and UI generators, so don't be surprised if a library, tool or some tutorial "doesn't keep up" with specification versions.</p>
+<blockquote>
+<p>For more details about available OpenAPI Specification versions see <a href="https://spec.openapis.org/oas/">docs</a></p>
+</blockquote>
+<h3 id="openapi-information">OpenAPI information<a class="headerlink" href="#openapi-information" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">&quot;info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;demo | v1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+</code></pre></div>
+<p>This value represents the <code>"title"</code> and <code>"version"</code> of your API documentation. The <code>"title"</code> shows a simple text and the <code>"version"</code> informs the consumer about the version of API he's utilizisng.</p>
+<h3 id="openapi-servers">OpenAPI servers<a class="headerlink" href="#openapi-servers" title="Permanent link">#</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">&quot;servers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://localhost:5001/&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+</code></pre></div>
+The <code>"servers"</code> key stores the URL where our API documentation is available. This URL is important as the tool for rendering the UI like Scalar will use that URL to send the requests to the endpoints, so if our documentation has 1 endpoint, and it's structure looks like this:</p>
+<p><div class="highlight"><pre><span></span><code><span class="nt">&quot;/posts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+the resulting request will be sent to the</p>
+<p><div class="highlight"><pre><span></span><code>GET https://localhost:5001/posts
+</code></pre></div>
+The main thing to know is that <strong>OpenAPI</strong> documentation is built during runtime by default. Because of this, the "servers" value is dynamic and the documentation becomes "request-aware".</p>
+<h3 id="openapi-paths">OpenAPI paths<a class="headerlink" href="#openapi-paths" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;/posts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="s2">&quot;demo&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;responses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;200&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;text/plain&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">              </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+</code></pre></div>
+<p>This section describes all our API endpoints, each endpoint has a lot of values that are describing it in details: path, HTTP request method, tags and responses. Let's analyze this section in details with examples.</p>
+<p>Understand that <strong>OpenAPI</strong> specification organizes documentation by operations, which are grouped by paths (endpoints). Currently our application has <code>GET https://localhost:5001/posts</code> endpoint, let's add <code>POST</code> endpoin to see the different <strong>OpenAPI</strong> documentation output:</p>
+<div class="highlight"><pre><span></span><code>var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+<span class="w"> </span>   app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+app.MapGet(&quot;/posts&quot;, () =&gt; &quot;get posts&quot;);
+<span class="gi">+ app.MapGet(&quot;/users&quot;, () =&gt; &quot;get users&quot;); // 👈️ Add new GET endpoint</span>
+
+app.Run();
+</code></pre></div>
+<p>After running the application the <code>"paths"</code> section will be updated, now it consits 2 different endpoints:</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span> &quot;paths&quot;: {
+<span class="w"> </span>   &quot;/posts&quot;: { ... },
+<span class="gi">+   &quot;/users&quot;: { ... }</span>
+<span class="w"> </span> },
+</code></pre></div>
+<h3 id="openapi-http-request-methods">OpenAPI HTTP request methods<a class="headerlink" href="#openapi-http-request-methods" title="Permanent link">#</a></h3>
+<p>Now let's analyze the details of the path in our <strong>OpenAPI</strong> document by taking the <code>"/post"</code> endpoint as an example:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;/posts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+</code></pre></div>
+<p>Each HTTP endpoint has its own method name, which determines what type of <strong>CRUD</strong> operation a particular endpoint belongs to: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code> etc. If we add a new endpoint with the same path, but different method names we'll get 2 endpoints within the same path <code>"/posts"</code>.</p>
+<p>Let's add a new endpoint into our application to see that in action:</p>
+<div class="highlight"><pre><span></span><code>var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+<span class="w"> </span>   app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+app.MapGet(&quot;/posts&quot;, () =&gt; &quot;get posts&quot;);
+<span class="gi">+ app.MapPost(&quot;/posts&quot;, () =&gt; &quot;create post&quot;);</span>
+<span class="gd">- app.MapGet(&quot;/users&quot;, () =&gt; &quot;get users&quot;);</span>
+
+app.Run();
+</code></pre></div>
+<p>After the application re-run:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;/posts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;post&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+</code></pre></div>
+<p>Now we have 2 different endpoints within the same path <code>"/posts"</code>, it shows us how <strong>OpenAPI</strong> groups endpoints by path with different HTTP request methods.</p>
+<blockquote>
+<p>Learn more about HTTP request methods <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods">here</a></p>
+</blockquote>
+<h3 id="openapi-tags">OpenAPI tags<a class="headerlink" href="#openapi-tags" title="Permanent link">#</a></h3>
+<p>Each path has it's set of <code>"tags"</code></p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;/posts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;demo&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="err">...</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>"tags"</code> in <strong>OpenAPI</strong> are used to logically group endpoints within documentation. Tools for rendering UI like Scalar are using tags to group related operations into sections, such as posts, auth, etc., to make the documentation structured and more readable. We'll see why tags are helpful when we'll render the UI using <strong>OpenAPI</strong> document.</p>
+<h3 id="openapi-responses">OpenAPI responses<a class="headerlink" href="#openapi-responses" title="Permanent link">#</a></h3>
+<p>Each endpoint in an <strong>OpenAPI</strong> document contains detailed information about the responses it can return:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;/posts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;demo&quot;</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;responses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;200&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;text/plain&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">              </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Since an endpoint can return multiple HTTP status codes with different response bodies, <strong>OpenAPI</strong> represents <code>"responses"</code> as a collection of possible responses keyed by status code.</p>
+<p>You should be familiar with the most common HTTP status codes:</p>
+<ul>
+<li><code>"200"</code> - success</li>
+<li><code>"404"</code> - resource was not found</li>
+<li><code>"500"</code> - internal server error</li>
+</ul>
+<p>Each status code contains details describing the response.</p>
+<p>In order to see how <strong>OpenAPI</strong> specification documents different HTTP responses we'll add those lines to our endpoint:</p>
+<div class="highlight"><pre><span></span><code>var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+<span class="w"> </span>   app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+
+app.MapGet(&quot;/posts&quot;, () =&gt; &quot;get posts&quot;)
+<span class="gi">+   .Produces&lt;string&gt;(StatusCodes.Status200OK)</span>
+<span class="gi">+   .Produces&lt;string&gt;(StatusCodes.Status500InternalServerError);</span>
+<span class="gd">- app.MapPost(&quot;/posts&quot;, () =&gt; &quot;create post&quot;);</span>
+
+app.Run();
+</code></pre></div>
+<p>The resulting output will be:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;/posts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="s2">&quot;demo&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;responses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;200&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="err">...</span>
+<span class="w">          </span><span class="p">},</span>
+<span class="w">          </span><span class="nt">&quot;500&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="err">...</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+</code></pre></div>
+<p>Now we see that one endpoint can return different status codes and different information. Now let's analyze the details of the responses structure.</p>
+<h4 id="description"><code>"description"</code><a class="headerlink" href="#description" title="Permanent link">#</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+</code></pre></div>
+<p>A short human-readable explanation of the response. In this case, <code>200 OK</code> means that the request was successfully processed.</p>
+<h4 id="content"><code>"content"</code><a class="headerlink" href="#content" title="Permanent link">#</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;text/plain&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Describes the actual response body returned by the endpoint.</p>
+<p>The <code>content</code> section contains:</p>
+<ul>
+<li>media type (<code>text/plain</code>, <code>application/json</code>, etc.)</li>
+<li>schema describing the structure of the returned data</li>
+</ul>
+<p>Let's analyze <code>"content"</code> section in details:</p>
+<h4 id="textplain"><code>"text/plain"</code><a class="headerlink" href="#textplain" title="Permanent link">#</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;text/plain&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p>Specifies the MIME type (media type) of the response. In this example, the endpoint returns plain text. Commonly used media types are:</p>
+<ul>
+<li><code>application/json</code></li>
+<li><code>text/plain</code></li>
+<li><code>application/xml</code></li>
+</ul>
+<p>as you can see, we can also return the output in a <code>JSON</code> format.</p>
+<h4 id="schema"><code>"schema"</code><a class="headerlink" href="#schema" title="Permanent link">#</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Defines the structure and data type of the response body, in this case the response body is a primitive <code>string</code> value.</p>
+<h3 id="openapi-parameters">OpenAPI parameters<a class="headerlink" href="#openapi-parameters" title="Permanent link">#</a></h3>
+<p>There is also a <code>"parameters"</code> section we didn't see, to introduce it, define a new endpoint with the following code:</p>
+<div class="highlight"><pre><span></span><code>var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+<span class="w"> </span>   app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+
+app.MapGet(&quot;/posts&quot;, () =&gt; &quot;get posts&quot;);
+<span class="gi">+ app.MapPut(&quot;/posts/{id}&quot;, (int id) =&gt; $&quot;update {id} post&quot;);</span>
+
+app.Run();
+</code></pre></div>
+<p>After re-running the application we'll see that the structure of that new enpoint slightly differs from the previous endpoints.</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span> &quot;paths&quot;: {
+<span class="w"> </span>   &quot;/posts/{id}&quot;: {
+<span class="w"> </span>     &quot;put&quot;: {
+<span class="w"> </span>       &quot;tags&quot;: [
+<span class="w"> </span>         &quot;demo&quot;
+<span class="w"> </span>       ],
+<span class="gi">+        &quot;parameters&quot;: [</span>
+<span class="gi">+          {</span>
+<span class="gi">+            &quot;name&quot;: &quot;id&quot;,</span>
+<span class="gi">+            &quot;in&quot;: &quot;path&quot;,</span>
+<span class="gi">+            &quot;required&quot;: true,</span>
+<span class="gi">+            &quot;schema&quot;: {</span>
+<span class="gi">+              &quot;pattern&quot;: &quot;^-?(?:0|[1-9]\\d*)$&quot;,</span>
+<span class="gi">+              &quot;type&quot;: [</span>
+<span class="gi">+                &quot;integer&quot;,</span>
+<span class="gi">+                &quot;string&quot;</span>
+<span class="gi">+              ],</span>
+<span class="gi">+              &quot;format&quot;: &quot;int32&quot;</span>
+<span class="gi">+            }</span>
+<span class="gi">+          }</span>
+<span class="gi">+        ],</span>
+<span class="w"> </span>       &quot;responses&quot;: {
+<span class="w"> </span>         &quot;200&quot;: {
+<span class="w"> </span>           &quot;description&quot;: &quot;OK&quot;,
+<span class="w"> </span>           &quot;content&quot;: {
+<span class="w"> </span>             &quot;text/plain&quot;: {
+<span class="w"> </span>               &quot;schema&quot;: {
+<span class="w"> </span>                 &quot;type&quot;: &quot;string&quot;
+<span class="w"> </span>               }
+<span class="w"> </span>             }
+<span class="w"> </span>           }
+<span class="w"> </span>         }
+<span class="w"> </span>       }
+<span class="w"> </span>     }
+<span class="w"> </span>   }
+<span class="w"> </span> },
+</code></pre></div>
+<p>Now we see a new section with <code>"parameters"</code> key. This section describes all parameters the endpoint expects from the client in order to successfully process the request.</p>
+<p>In our example, the endpoint</p>
+<div class="highlight"><pre><span></span><code>PUT /posts/{id}
+</code></pre></div>
+<p>contains a route parameter named <code>{id}</code>. ASP.NET Core automatically detects this parameter from the route template and includes it in the generated <strong>OpenAPI</strong> document.</p>
+<p>The <code>"name"</code> field represents the name of the parameter:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;id&quot;</span>
+</code></pre></div>
+<p>The <code>"in"</code> field specifies where the parameter comes from. In our case, the parameter is part of the URL path, therefore its location is <code>"path"</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;in&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span>
+</code></pre></div>
+<p>The <code>"required"</code> field indicates whether the parameter is mandatory. Path parameters <strong>are always required</strong> because the route cannot be matched without them:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</code></pre></div>
+<p>The <code>"schema"</code> section describes the expected data type and validation rules for the parameter.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^-?(?:0|[1-9]\\d*)$&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;string&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;int32&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>In this example:</p>
+<ul>
+<li><code>"format": "int32"</code> means the parameter should represent a 32-bit integer.</li>
+<li>
+<p><code>"pattern"</code> contains additional validation rules generated by ASP.NET Core.</p>
+<ul>
+<li>
+<p><code>"^-?(?:0|[1-9]\\d*)$"</code></p>
+<p>this validation rule ensures that the parameter value represents a valid integer number.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>"type"</code> describes the underlying <code>JSON</code> representation of the value.</p>
+</li>
+</ul>
+<hr />
+<h2 id="customize-the-openapi-document">Customize the OpenAPI document<a class="headerlink" href="#customize-the-openapi-document" title="Permanent link">#</a></h2>
+<p>Now let's see how we can customize the <strong>OpenAPI</strong> document, I'll start from basic customization and then we'll get into the transformers.</p>
+<h3 id="use-different-openapi-document-format">Use different OpenAPI document format<a class="headerlink" href="#use-different-openapi-document-format" title="Permanent link">#</a></h3>
+<p>If you want to use the <code>YAML</code> format instead of <code>JSON</code> you'll need to specify it in the <code>Program.cs</code> like this:</p>
+<p><div class="highlight"><pre><span></span><code>var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+<span class="gi">+   app.MapOpenApi(&quot;/openapi/{documentName}.yaml&quot;);</span>
+//               Specify the URL with .yaml  👆️
+}
+
+app.UseHttpsRedirection();
+
+app.MapGet(&quot;/posts&quot;, () =&gt; &quot;get posts&quot;);
+
+app.Run();
+</code></pre></div>
+Now the URL to access the document will have <code>.yaml</code> in the end of the URL:</p>
+<div class="highlight"><pre><span></span><code>https://localhost:5001/openapi/v1.yaml
+</code></pre></div>
+<p>As expected, the output will be in <code>YAML</code> format:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">openapi</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.1.1&#39;</span>
+<span class="nt">info</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo | v1</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+<span class="nt">servers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://localhost:5001/</span>
+<span class="nt">paths</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">/posts</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">get</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span>
+<span class="w">        </span><span class="s">&#39;200&#39;</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OK</span>
+<span class="w">          </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">text/plain</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="nt">tags</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo</span>
+</code></pre></div>
+<h3 id="customize-the-openapi-document-name">Customize the OpenAPI document name<a class="headerlink" href="#customize-the-openapi-document-name" title="Permanent link">#</a></h3>
+<p>Each <strong>OpenAPI</strong> document in your application has it's unique name</p>
+<p><div class="highlight"><pre><span></span><code><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">();</span><span class="w"> </span><span class="c1">// 👈️ Default name is v1</span>
+</code></pre></div>
+The document name can be modified by passing the name as a parameter to the AddOpenApi call:</p>
+<div class="highlight"><pre><span></span><code><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="s">&quot;custom&quot;</span><span class="p">);</span>
+</code></pre></div>
+<p>Now the URL to access the resulting <strong>OpenAPI</strong> document will also change:</p>
+<p><div class="highlight"><pre><span></span><code>https://localhost:5001/openapi/custom.json
+</code></pre></div>
+The resulting document will have those changeis in the <code>"info"</code> section:</p>
+<p><div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;openapi&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.1.1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;demo | custom&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">👈️</span><span class="w"> </span><span class="err">Here</span><span class="w"> </span><span class="err">is</span><span class="w"> </span><span class="err">our</span><span class="w"> </span><span class="err">value</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="err">...</span>
+<span class="p">}</span>
+</code></pre></div>
+It's important to understand, that the "demo" in the "title" was generated based on the project name, if you want to change it to something different you'll need to use transformers, we'll get to them in a minute.</p>
+<h3 id="customize-the-openapi-endpoint-route">Customize the OpenAPI endpoint route<a class="headerlink" href="#customize-the-openapi-endpoint-route" title="Permanent link">#</a></h3>
+<p>You can customize the documentation URL as shown above defining the new URL path in <code>.MapOpenApi()</code> call:</p>
+<p><div class="highlight"><pre><span></span><code><span class="n">app</span><span class="p">.</span><span class="n">MapOpenApi</span><span class="p">(</span><span class="s">&quot;/my/documentation/openapi.json&quot;</span><span class="p">);</span>
+</code></pre></div>
+And believe me or not, it will work and you'll be able to access the document.</p>
+<h3 id="generate-multiple-openapi-documents">Generate multiple OpenAPI documents<a class="headerlink" href="#generate-multiple-openapi-documents" title="Permanent link">#</a></h3>
+<p>In some cases you'll need to generate multiple <strong>OpenAPI</strong> documentations, because <strong>OpenAPI</strong> documentation will be needed for:</p>
+<ul>
+<li>Audiences, such as public and internal APIs.</li>
+<li>Versions of an API.</li>
+<li>Parts of an app, such as a frontend and backend API.</li>
+</ul>
+<p>To generate multiple <strong>OpenAPI</strong> documents, call the <code>.AddOpenApi()</code> method once for each document, specifying a different document name:</p>
+<div class="highlight"><pre><span></span><code><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="s">&quot;v1&quot;</span><span class="p">);</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="s">&quot;v2&quot;</span><span class="p">);</span>
+</code></pre></div>
+<p>To the different documents will have different URL's:</p>
+<div class="highlight"><pre><span></span><code>https://localhost:5001/openapi/v1.json
+
+https://localhost:5001/openapi/v2.json
+</code></pre></div>
+<p>Each invocation of <code>.AddOpenApi()</code> can specify its own set of options, so you can choose to use the same or different customizations for each <strong>OpenAPI</strong> document.</p>
+<p>The framework uses the <code>ShouldInclude</code> delegate method of <code>OpenApiOptions</code> to determine which endpoints to include in each document.</p>
+<p>To visualize it more clearly, consider the following code in your  <code>Program.cs</code> file:</p>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebApplication</span><span class="p">.</span><span class="n">CreateBuilder</span><span class="p">();</span>
+
+<span class="c1">// Include &quot;backend&quot; endpoints</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="s">&quot;backend&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">ShouldInclude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">desc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">desc</span><span class="p">.</span><span class="n">GroupName</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;backend&quot;</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="c1">// Include &quot;frontend&quot; endpoints</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="s">&quot;frontend&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">ShouldInclude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">desc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">desc</span><span class="p">.</span><span class="n">GroupName</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;frontend&quot;</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">Environment</span><span class="p">.</span><span class="n">IsDevelopment</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">MapOpenApi</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="n">app</span><span class="p">.</span><span class="n">UseHttpsRedirection</span><span class="p">();</span>
+
+<span class="c1">// Add the endpoint to the &quot;backend&quot; group</span>
+<span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/backend/posts&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;backend posts&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">WithGroupName</span><span class="p">(</span><span class="s">&quot;backend&quot;</span><span class="p">);</span>
+
+<span class="c1">// Add the endpoint to the frontend group</span>
+<span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/frontend/posts&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;frontend posts&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">WithGroupName</span><span class="p">(</span><span class="s">&quot;frontend&quot;</span><span class="p">);</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</code></pre></div>
+<p>Now each <strong>OpenApi</strong> document is accessible from it's own URL:</p>
+<div class="highlight"><pre><span></span><code>https://localhost:5001/openapi/backend.json
+
+https://localhost:5001/openapi/frontend.json
+</code></pre></div>
+<h3 id="generate-openapi-documents-at-build-time">Generate OpenAPI documents at build time<a class="headerlink" href="#generate-openapi-documents-at-build-time" title="Permanent link">#</a></h3>
+<p>By default, the OpenAPI document is generated at runtime, which means a new, up-to-date document is produced every time the application starts.</p>
+<p>In some scenarios, it's helpful to generate the <strong>OpenAPI</strong> document during the app's build time, for example if <strong>OpenAPI</strong> documentation needs to be:</p>
+<ul>
+<li>Committed into source control.</li>
+<li>Used for spec-based integration testing.</li>
+<li>Served statically from the web server.</li>
+</ul>
+<p>The <a href="https://www.nuget.org/packages/Microsoft.Extensions.ApiDescription.Server">Microsoft.Extensions.ApiDescription.Server</a> package enables build-time document generation.</p>
+<p>After your project was built:</p>
+<div class="highlight"><pre><span></span><code>dotnet build
+</code></pre></div>
+<p>The place where you can find your generated document is</p>
+<div class="highlight"><pre><span></span><code>obj/{ProjectName}.json
+</code></pre></div>
+<hr />
+<h2 id="customize-the-openapi-document-using-transformers">Customize the OpenAPI document using transformers<a class="headerlink" href="#customize-the-openapi-document-using-transformers" title="Permanent link">#</a></h2>
+<p>Transformers provide a useful API for modifying the <strong>OpenAPI</strong> document with your customizations.</p>
+<p>The common scenarios to use transformers:</p>
+<ul>
+<li>Adding parameters to all operations in a document.</li>
+<li>Modifying descriptions for parameters or operations.</li>
+<li>Adding top-level information to the <strong>OpenAPI</strong> document.</li>
+</ul>
+<p>There are 3 categories of transformers:</p>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Operation</th>
+<th>Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Access to the entire OpenAPI document. These can be used to make global modifications to the document.</td>
+<td>Apply to each individual operation. Each individual operation is a combination of path and HTTP method. These can be used to modify parameters or responses on endpoints.</td>
+<td>Apply to each schema in the document. These can be used to modify the schema of request or response bodies, or any nested schemas.</td>
+</tr>
+</tbody>
+</table>
+<p>Let's analyze each transformers category with examples.</p>
+<hr />
+<h3 id="transformers-structure">Transformers structure<a class="headerlink" href="#transformers-structure" title="Permanent link">#</a></h3>
+<p>Before creating our own transformers let's analyze their structure. We have 3 categories of transformers, hence there are 3 interfaces for each transformer:</p>
+<ul>
+<li><code>IOpenApiDocumentTransformer</code> (Document transformer).</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyDocumentTransformer</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IOpenApiDocumentTransformer</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">TransformAsync</span><span class="p">(</span><span class="n">OpenApiDocument</span><span class="w"> </span><span class="n">document</span><span class="p">,</span><span class="w"> </span><span class="n">OpenApiDocumentTransformerContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span>
+<span class="w">        </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><code>IOpenApiOperationTransformer</code> (Operation transformer).</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyOperationTransformer</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IOpenApiOperationTransformer</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">TransformAsync</span><span class="p">(</span><span class="n">OpenApiOperation</span><span class="w"> </span><span class="n">operation</span><span class="p">,</span><span class="w"> </span><span class="n">OpenApiOperationTransformerContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><code>IOpenApiSchemaTransformer</code> (Schema transformer).</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MySchemaTransformer</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IOpenApiSchemaTransformer</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">TransformAsync</span><span class="p">(</span><span class="n">OpenApiSchema</span><span class="w"> </span><span class="n">schema</span><span class="p">,</span><span class="w"> </span><span class="n">OpenApiSchemaTransformerContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h3 id="transformer-parameters">Transformer parameters<a class="headerlink" href="#transformer-parameters" title="Permanent link">#</a></h3>
+<p>Let's analyze the parameters of those transformers.</p>
+<p>Each transformer receives three parameters that represent the current state of the OpenAPI generation pipeline.</p>
+<h4 id="openapidocument-openapioperation-openapischema"><code>OpenApiDocument</code> | <code>OpenApiOperation</code> | <code>OpenApiSchema</code><a class="headerlink" href="#openapidocument-openapioperation-openapischema" title="Permanent link">#</a></h4>
+<p>The first parameter represents the part of the <strong>OpenAPI</strong> document being modified.</p>
+<p>Depending on the transformer type:</p>
+<ul>
+<li><code>IOpenApiDocumentTransformer</code> - works with the entire <code>OpenApiDocument</code></li>
+<li><code>IOpenApiOperationTransformer</code> - works with a single <code>OpenApiOperation</code></li>
+<li><code>IOpenApiSchemaTransformer</code> - works with a single <code>OpenApiSchema</code></li>
+</ul>
+<p>This parameter is mutable, meaning transformers can modify its structure (add, remove, or update properties).</p>
+<h4 id="openapidocumenttransformercontext-openapioperationtransformercontext-openapischematransformercontext"><code>OpenApiDocumentTransformerContext</code> | <code>OpenApiOperationTransformerContext</code> | <code>OpenApiSchemaTransformerContext</code><a class="headerlink" href="#openapidocumenttransformercontext-openapioperationtransformercontext-openapischematransformercontext" title="Permanent link">#</a></h4>
+<p>Each transformer also receives a context object that provides additional metadata about the current item being processed.</p>
+<p>For example, the context may include:</p>
+<ul>
+<li>information about the current endpoint (for operation transformers)</li>
+<li>information about the associated API description</li>
+<li>the document name being generated</li>
+<li>access to dependency injection services (<code>IServiceProvider</code>)</li>
+</ul>
+<p>etc.</p>
+<h4 id="cancellationtoken"><code>CancellationToken</code><a class="headerlink" href="#cancellationtoken" title="Permanent link">#</a></h4>
+<p>The <code>CancellationToken</code> allows the transformation process to be cancelled if the request is aborted or the application is shutting down.</p>
+<p>Basically, these three parameters allow transformers:</p>
+<ul>
+<li>inspect the current <strong>OpenAPI</strong> model</li>
+<li>access runtime metadata from ASP.NET Core</li>
+<li>safely modify the document during generation</li>
+</ul>
+<hr />
+<h3 id="ways-to-register-the-transformers">Ways to register the transformers<a class="headerlink" href="#ways-to-register-the-transformers" title="Permanent link">#</a></h3>
+<p>There are 3 ways to register transformers:</p>
+<ul>
+<li>using a delegate</li>
+<li>using an instance of interface</li>
+<li>using a DI</li>
+</ul>
+<p>Here is the visual example with Document transformer:</p>
+<div class="highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="nn">Microsoft.AspNetCore.OpenApi</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">Microsoft.OpenApi</span><span class="p">;</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebApplication</span><span class="p">.</span><span class="n">CreateBuilder</span><span class="p">();</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="n">options</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Register using a delegate</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">AddDocumentTransformer</span><span class="p">((</span><span class="n">document</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Register using an instance of interface</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">AddDocumentTransformer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MyDocumentTransformer</span><span class="p">());</span>
+<span class="w">    </span><span class="c1">// Register using a DI</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">AddDocumentTransformer</span><span class="o">&lt;</span><span class="n">MyDocumentTransformer</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="p">});</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">Environment</span><span class="p">.</span><span class="n">IsDevelopment</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">MapOpenApi</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">UseHttpsRedirection</span><span class="p">();</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/posts&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;get posts&quot;</span><span class="p">);</span>
+<span class="n">app</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+
+<span class="c1">// Dummy Document transformer</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyDocumentTransformer</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IOpenApiDocumentTransformer</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">TransformAsync</span><span class="p">(</span><span class="n">OpenApiDocument</span><span class="w"> </span><span class="n">document</span><span class="p">,</span><span class="w"> </span><span class="n">OpenApiDocumentTransformerContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h3 id="execution-order-for-transformers">Execution order for transformers<a class="headerlink" href="#execution-order-for-transformers" title="Permanent link">#</a></h3>
+<p>Transformers are always executed in the following order:</p>
+<p><div class="highlight"><pre><span></span><code>Document transformers
+      ↑
+Operation transformers
+      ↑
+Schema transformers
+</code></pre></div>
+This execution order is fixed and cannot be changed.</p>
+<p>However, the order in which you register transformers matters for transformers of the same type. Transformers of the same category are executed sequentially in the exact order they were added.</p>
+<p>For example, if you register two document transformers:</p>
+<p><div class="highlight"><pre><span></span><code><span class="n">options</span><span class="p">.</span><span class="n">AddDocumentTransformer</span><span class="o">&lt;</span><span class="n">MyDocumentTransformer1</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">options</span><span class="p">.</span><span class="n">AddDocumentTransformer</span><span class="o">&lt;</span><span class="n">MyDocumentTransformer2</span><span class="o">&gt;</span><span class="p">();</span>
+</code></pre></div>
+Then <code>MyDocumentTransformer1</code> executes first <code>MyDocumentTransformer2</code> executes second and has access to all modifications made by the first transformer. The same rule applies to Operation and Schema transformers.</p>
+<p>Now we'll analyze each transformer type and see how they behave through practical examples.</p>
+<hr />
+<h3 id="open-api-generation-pipeline">Open API generation pipeline<a class="headerlink" href="#open-api-generation-pipeline" title="Permanent link">#</a></h3>
+<p>The entire process of the <strong>OpenAPI</strong> generation can be introduced like this:</p>
+<div class="highlight"><pre><span></span><code>JSON serialization
+    ↑
+Transformers execution (Schema -&gt; Operation -&gt; Document)
+    ↑
+Document generation
+    ↑
+Operation generation
+    ↑
+Schema generation
+    ↑
+ApiDescription metadata graph
+    ↑
+Endpoints
+</code></pre></div>
+<p>As you can see instead of producing the final <code>JSON</code>/<code>YAML</code> document immediately, the framework gradually builds an internal object graph that represents the entire API structure. This design allows each stage of the pipeline to modify and reuse metadata generated by previous stages.</p>
+<hr />
+<h3 id="use-document-transformers">Use Document transformers<a class="headerlink" href="#use-document-transformers" title="Permanent link">#</a></h3>
+<p>Document transformers allow you to modify the generated <strong>OpenAPI</strong> document globally.</p>
+<p>Unlike Operation or Schema transformers, Document transformers work with the entire <code>OpenApiDocument</code> object, which means they can customize top-level metadata, security requirements, servers, tags, and any other part of the final document.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyDocumentTransformer</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IOpenApiDocumentTransformer</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">TransformAsync</span><span class="p">(</span><span class="n">OpenApiDocument</span><span class="w"> </span><span class="n">document</span><span class="p">,</span><span class="w"> </span><span class="n">OpenApiDocumentTransformerContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Document transformers receive a context object that provides additional information about the current generation process, including:</p>
+<ul>
+<li>the name of the document being generated</li>
+<li>the <code>ApiDescriptionGroups</code> associated with that document</li>
+<li>the <code>IServiceProvider</code> used during document generation</li>
+</ul>
+<p>The following example demonstrates a simple Document transformer that modifies the top-level <code>"info"</code> section of the generated <strong>OpenAPI</strong> document:</p>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebApplication</span><span class="p">.</span><span class="n">CreateBuilder</span><span class="p">();</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="n">options</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">AddDocumentTransformer</span><span class="p">((</span><span class="n">document</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">document</span><span class="p">.</span><span class="n">Info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">Title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Demo API&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">Version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;v99&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">Description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;API for testing purposes&quot;</span>
+<span class="w">        </span><span class="p">};</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">Environment</span><span class="p">.</span><span class="n">IsDevelopment</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">MapOpenApi</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">UseHttpsRedirection</span><span class="p">();</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/posts&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;get posts&quot;</span><span class="p">);</span>
+<span class="n">app</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</code></pre></div>
+<p>Since document transformers execute after all Schemas and Operations are generated, they act as the final customization layer of the <strong>OpenAPI</strong> generation pipeline.</p>
+<p>Document transformers can also use services from ASP.NET Core's DI IoC container.</p>
+<p>This is useful when the generated <strong>OpenAPI</strong> document depends on the current application configuration or runtime services.</p>
+<p>The following example demonstrates a Document transformer that uses the <code>IAuthenticationSchemeProvider</code> service to check whether <code>JWT Bearer</code> authentication is registered in the application.</p>
+<p>If a <code>Bearer</code> authentication scheme exists, the transformer adds a security scheme definition to the generated <strong>OpenAPI</strong> document:</p>
+<p><div class="highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="nn">Microsoft.AspNetCore.Authentication</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">Microsoft.AspNetCore.OpenApi</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">Microsoft.OpenApi</span><span class="p">;</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebApplication</span><span class="p">.</span><span class="n">CreateBuilder</span><span class="p">();</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddAuthentication</span><span class="p">().</span><span class="n">AddJwtBearer</span><span class="p">();</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="n">options</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">AddDocumentTransformer</span><span class="o">&lt;</span><span class="n">BearerSecuritySchemeTransformer</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="p">});</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">Environment</span><span class="p">.</span><span class="n">IsDevelopment</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">MapOpenApi</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">UseHttpsRedirection</span><span class="p">();</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/posts&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;get posts&quot;</span><span class="p">);</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+
+<span class="k">internal</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nf">BearerSecuritySchemeTransformer</span><span class="p">(</span><span class="n">IAuthenticationSchemeProvider</span><span class="w"> </span><span class="n">authenticationSchemeProvider</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IOpenApiDocumentTransformer</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">TransformAsync</span><span class="p">(</span><span class="n">OpenApiDocument</span><span class="w"> </span><span class="n">document</span><span class="p">,</span><span class="w"> </span><span class="n">OpenApiDocumentTransformerContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">authenticationSchemes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">authenticationSchemeProvider</span><span class="p">.</span><span class="n">GetAllSchemesAsync</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">authenticationSchemes</span><span class="p">.</span><span class="n">Any</span><span class="p">(</span><span class="n">authScheme</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">authScheme</span><span class="p">.</span><span class="n">Name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Bearer&quot;</span><span class="p">))</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">securitySchemes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Dictionary</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="n">IOpenApiSecurityScheme</span><span class="o">&gt;</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="na">[&quot;Bearer&quot;]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OpenApiSecurityScheme</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">Type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SecuritySchemeType</span><span class="p">.</span><span class="n">Http</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">Scheme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bearer&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">In</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterLocation</span><span class="p">.</span><span class="n">Header</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">BearerFormat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Json Web Token&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">};</span>
+<span class="w">            </span><span class="n">document</span><span class="p">.</span><span class="n">Components</span><span class="w"> </span><span class="o">??=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OpenApiComponents</span><span class="p">();</span>
+<span class="w">            </span><span class="n">document</span><span class="p">.</span><span class="n">Components</span><span class="p">.</span><span class="n">SecuritySchemes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">securitySchemes</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+After re-running the application you can see the new section in the documentation:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;securitySchemes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;Bearer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;scheme&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;bearerFormat&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Json Web Token&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Let's analyze this new section. The <code>"components"</code> section contains reusable objects that can be referenced across the <strong>OpenAPI</strong> document. In this example, it includes the "securitySchemes" section, which defines authentication methods supported by the API.</p>
+<p>The <code>"securitySchemes"</code> object is a registry of available authentication mechanisms. Each scheme can later be applied to individual endpoints or to the entire API.</p>
+<h4 id="bearer"><code>"Bearer"</code><a class="headerlink" href="#bearer" title="Permanent link">#</a></h4>
+<p>This is the name of the security scheme. It acts as an identifier that can be referenced elsewhere in the <strong>OpenAPI</strong> document.</p>
+<h4 id="type-http"><code>"type": "http"</code><a class="headerlink" href="#type-http" title="Permanent link">#</a></h4>
+<p>This indicates that the authentication mechanism is based on HTTP authentication. In this case we're using the HTTP Bearer authentication.</p>
+<h4 id="scheme-bearer"><code>"scheme": "bearer"</code><a class="headerlink" href="#scheme-bearer" title="Permanent link">#</a></h4>
+<p>Specifies the authentication scheme used within HTTP authentication. Here it defines <code>Bearer</code> token authentication, where the token is sent in the HTTP <code>Authorization</code> header</p>
+<h4 id="bearerformat"><code>"bearerFormat"</code><a class="headerlink" href="#bearerformat" title="Permanent link">#</a></h4>
+<p>Provides a human-readable hint about the token format. In this case, it indicates that the bearer token is expected to be a <code>JSON Web Token</code> (JWT).</p>
+<blockquote>
+<p>It's important to understand that Document transformers are unique to the document instance they're associated with. By specifying something like <code>builder.Services.AddOpenApi("internal", options =&gt; {...});</code></p>
+</blockquote>
+<p>The <code>"components"</code> section contains globally reusable OpenAPI objects that can be referenced throughout the document instead of being duplicated multiple times.</p>
+<hr />
+<h3 id="use-operation-transformers">Use Operation transformers<a class="headerlink" href="#use-operation-transformers" title="Permanent link">#</a></h3>
+<p>Operation transformers allow you to modify individual <strong>OpenAPI</strong> operations. You can use Operation transformers when you need to:</p>
+<ul>
+<li>modify all endpoints in the application</li>
+<li>apply changes only to specific endpoints</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyOperationTransformer</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IOpenApiOperationTransformer</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">TransformAsync</span><span class="p">(</span><span class="n">OpenApiOperation</span><span class="w"> </span><span class="n">operation</span><span class="p">,</span><span class="w"> </span><span class="n">OpenApiOperationTransformerContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Operation transformers receive a context object containing:</p>
+<ul>
+<li>the <strong>OpenAPI</strong> document name</li>
+<li>the <code>ApiDescription</code> associated with the endpoint</li>
+<li>the <code>IServiceProvider</code></li>
+</ul>
+<p>The following example adds a <code>500 Internal Server Error</code> response to all operations in the document:</p>
+<div class="highlight"><pre><span></span><code><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="n">options</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">AddOperationTransformer</span><span class="p">((</span><span class="n">operation</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">operation</span><span class="p">.</span><span class="n">Responses</span><span class="w"> </span><span class="o">??=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OpenApiResponses</span><span class="p">();</span>
+
+<span class="w">        </span><span class="n">operation</span><span class="p">.</span><span class="n">Responses</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&quot;500&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">OpenApiResponse</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="n">Description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Internal server error&quot;</span>
+<span class="w">            </span><span class="p">});</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>This Operation transformer will add this response to all endpoints in the document, for the sake of simplicity I specified only 1 endpoint. The <strong>OpenAPI</strong> document will look like this:</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span> // ...
+<span class="w"> </span> &quot;paths&quot;: {
+<span class="w"> </span>   &quot;/posts&quot;: {
+<span class="w"> </span>     &quot;get&quot;: {
+<span class="w"> </span>       &quot;tags&quot;: [
+<span class="w"> </span>         &quot;demo&quot;
+<span class="w"> </span>       ],
+<span class="w"> </span>       &quot;responses&quot;: {
+<span class="w"> </span>         &quot;200&quot;: {
+<span class="w"> </span>         ...
+<span class="w"> </span>         },
+<span class="gi">+         &quot;500&quot;: {</span>
+<span class="gi">+           &quot;description&quot;: &quot;Internal server error&quot;</span>
+<span class="gi">+         }</span>
+<span class="w"> </span>       }
+<span class="w"> </span>     }
+<span class="w"> </span>   }
+<span class="w"> </span> },
+<span class="w"> </span> // ...
+</code></pre></div>
+<p>Operation transformers can also be attached to a specific endpoint instead of the entire document. The following example marks a single endpoint as deprecated in the generated <strong>OpenAPI</strong> document:</p>
+<div class="highlight"><pre><span></span><code><span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/old/posts&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;get old posts&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">AddOpenApiOperationTransformer</span><span class="p">((</span><span class="n">operation</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">operation</span><span class="p">.</span><span class="n">Deprecated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+</code></pre></div>
+<p>The resulting document will have a marker that this endpoint is deprecated and therefore shouldn't be used:</p>
+<div class="highlight"><pre><span></span><code>// ...
+<span class="w"> </span>   &quot;/old/posts&quot;: {
+<span class="w"> </span>     &quot;get&quot;: {
+<span class="w"> </span>       &quot;tags&quot;: [
+<span class="w"> </span>         &quot;demo&quot;
+<span class="w"> </span>       ],
+<span class="w"> </span>       &quot;responses&quot;: {
+<span class="w"> </span>         &quot;200&quot;: {
+<span class="w"> </span>           &quot;description&quot;: &quot;OK&quot;,
+<span class="w"> </span>           &quot;content&quot;: {
+<span class="w"> </span>             &quot;text/plain&quot;: {
+<span class="w"> </span>               &quot;schema&quot;: {
+<span class="w"> </span>                 &quot;type&quot;: &quot;string&quot;
+<span class="w"> </span>               }
+<span class="w"> </span>             }
+<span class="w"> </span>           }
+<span class="w"> </span>         },
+<span class="w"> </span>       },
+<span class="gi">+       &quot;deprecated&quot;: true</span>
+<span class="w"> </span>     }
+<span class="w"> </span>   }
+// ...
+</code></pre></div>
+<p>This marker will be shown in the tools like Scalar for generating UI. This allows endpoint-specific customization without affecting the rest of the API endpoints.</p>
+<hr />
+<h3 id="use-schema-transformers">Use Schema transformers<a class="headerlink" href="#use-schema-transformers" title="Permanent link">#</a></h3>
+<p>Schemas are the data models that are used in request and response bodies in an <strong>OpenAPI</strong> document. Schema transformers are useful when a modification:</p>
+<ul>
+<li>should be made to each schema in the document</li>
+<li>conditionally applied to certain schemas</li>
+</ul>
+<p>Schema transformers have access to a context object which contains:</p>
+<ul>
+<li>the name of the document the schema belongs to</li>
+<li>the <code>JSON</code> type information associated with the target schema</li>
+<li><code>IServiceProvider</code> used in document generation</li>
+</ul>
+<p>The following Schema transformer sets the format of <code>decimal</code> types to <code>decimal</code> instead of <code>double</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="nn">Microsoft.AspNetCore.OpenApi</span><span class="p">;</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebApplication</span><span class="p">.</span><span class="n">CreateBuilder</span><span class="p">();</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">(</span><span class="n">options</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Here is out Schema transformer to set the format of decimal to &#39;decimal&#39;</span>
+<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="n">AddSchemaTransformer</span><span class="p">((</span><span class="n">schema</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">cancellationToken</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">JsonTypeInfo</span><span class="p">.</span><span class="n">Type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">typeof</span><span class="p">(</span><span class="kt">decimal</span><span class="p">))</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">schema</span><span class="p">.</span><span class="n">Format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;decimal&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">Environment</span><span class="p">.</span><span class="n">IsDevelopment</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">MapOpenApi</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">UseHttpsRedirection</span><span class="p">();</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Body</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Amount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.1m</span><span class="w"> </span><span class="p">});</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+
+<span class="c1">//           👇️ Body class with decimal Amount property</span>
+<span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Body</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">decimal</span><span class="w"> </span><span class="n">Amount</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="p">;</span><span class="w"> </span><span class="k">set</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="generate-the-ui-using-scalar">Generate the UI using Scalar<a class="headerlink" href="#generate-the-ui-using-scalar" title="Permanent link">#</a></h2>
+<p>Finally, let's see how we can generate a UI using the <strong>OpenAPI</strong> document. For the example I'll use Scalar, as it's the most common tool for generating a UI.</p>
+<p>First, install the <a href="https://www.nuget.org/packages/Scalar.AspNetCore">Scalar.AspNetCore</a> package.</p>
+<p>Then, add this <code>app.MapScalarApiReference()</code> line to the <code>Program.cs</code> file:</p>
+<div class="highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="nn">Scalar.AspNetCore</span><span class="p">;</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WebApplication</span><span class="p">.</span><span class="n">CreateBuilder</span><span class="p">();</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddAuthentication</span><span class="p">().</span><span class="n">AddJwtBearer</span><span class="p">();</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddOpenApi</span><span class="p">();</span>
+
+<span class="kt">var</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">Environment</span><span class="p">.</span><span class="n">IsDevelopment</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">MapOpenApi</span><span class="p">();</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">MapScalarApiReference</span><span class="p">();</span><span class="w"> </span><span class="c1">// 👈️ Enable Scalar</span>
+<span class="p">}</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">UseHttpsRedirection</span><span class="p">();</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">MapGet</span><span class="p">(</span><span class="s">&quot;/posts&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;get posts&quot;</span><span class="p">);</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</code></pre></div>
+<p>Now, simply open the documentation with this URL:</p>
+<div class="highlight"><pre><span></span><code>https://localhost:5001/scalar/
+</code></pre></div>
+<p><em>(change the port if needed)</em></p>
+<p>As a result we have a beautiful UI generated using our <strong>OpenAPI</strong> document. It's important to know that Scalar acts like a real API consumer, so be careful when you're making some HTTP requests accessible for Scalar.</p>
+<hr />
+<p><a href="#">Bring me back to the top!</a></p>
+<p>Well, we dove really deep this time, this entire post was describing <strong>OpenAPI</strong> specification and how ASP.NET Core works with it.</p>
+<p>That's it for today, thanks for reading :)</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <!-- Footer -->
+<footer class="md-footer">
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright" style="text-align: center; width: 100%;">
+  
+  
+    <div>© 2026 Dmytro Shved | All Rights Reserved</div>
+  
+</div>
+
+      <!-- Social links -->
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.tabs", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

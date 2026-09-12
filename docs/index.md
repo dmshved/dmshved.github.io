@@ -23,7 +23,7 @@ scalable code. You can mostly find me by the smell of coffee, working on my lapt
 
 ---
 
-## **Currentlry working on:**
+## **Currentlry working on**
 
 - Building [bookrest](https://github.com/dmshved/bookrest) API as my pet-project
 - Learning Docker and exploring Kubernetes
@@ -44,7 +44,8 @@ scalable code. You can mostly find me by the smell of coffee, working on my lapt
 </div>
 
 - Implementing a **Clean Architecture** design pattern with **CQRS** keeping use cases focused, scalable and testable.
-- Implementing **ASP.NET Core Identity 2FA + JWT** enabling a high-security and scalable authentication.
+
+- Implementing **ASP.NET Core Identity + JWT** (Access/Refresh Tokens) with automated Refresh Token Rotation, establishing a scalable, stateless authentication.
 - Implementing **Stripe** financial platform to be able to accept payments, manage billing and scale.
 - Implementing **CI/CD** pipeline bringing fast and reliable development lifecycle.
 - Implementing and extending **Docker** containerization with **Kubernetes** providing consistency across environments.

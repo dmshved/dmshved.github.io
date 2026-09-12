@@ -1,0 +1,1261 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://dmytroshved.com/blog/2026/04/21/look-behind-dbcontext-in-aspnet-core-identity/">
+      
+      
+      
+        <link rel="next" href="../../../06/06/deep-dive-into-openapi-in-aspnet-core/">
+      
+      
+        
+      
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../feed_rss_updated.xml">
+      
+      <link rel="icon" href="../../../../../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Look behind DbContext in ASP.NET Core Identity - Dmytro Shved</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Look behind DbContext in ASP.NET Core Identity - Dmytro Shved" />
+<meta property="og:description" content="Backend Developer" />
+<meta property="og:image" content="https://dmytroshved.com/assets/images/social/blog/2026/04/21/look-behind-dbcontext-in-aspnet-core-identity.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://dmytroshved.com/blog/2026/04/21/look-behind-dbcontext-in-aspnet-core-identity/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Look behind DbContext in ASP.NET Core Identity - Dmytro Shved" />
+<meta property="twitter:description" content="Backend Developer" />
+<meta property="twitter:image" content="https://dmytroshved.com/assets/images/social/blog/2026/04/21/look-behind-dbcontext-in-aspnet-core-identity.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#look-behind-dbcontext-in-aspnet-core-identity" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="Dmytro Shved" class="md-header__button md-logo" aria-label="Dmytro Shved" data-md-component="logo">
+      
+<div class="rounded-full">
+  <img src="../../../../../assets/logo.jpg" alt="logo" />
+</div>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Dmytro Shved
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Look behind DbContext in ASP.NET Core Identity
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.." class="md-tabs__link">
+          
+  
+  
+  Home
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../../" class="md-tabs__link">
+          
+  
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<!-- Determine classes -->
+
+
+  
+
+
+
+<!-- Navigation -->
+<nav
+  class="md-nav md-nav--primary md-nav--lifted"
+  aria-label="Navigation"
+  data-md-level="0"
+>
+
+  <!-- Site title -->
+  <label class="md-nav__title" for="__drawer">
+    <a
+      href="../../../../.."
+      title="Dmytro Shved"
+      class="md-nav__button md-logo"
+      aria-label="Dmytro Shved"
+      data-md-component="logo"
+    >
+      
+<div class="rounded-full">
+  <img src="../../../../../assets/logo.jpg" alt="logo" />
+</div>
+
+    </a>
+    Dmytro Shved
+  </label>
+
+  <!-- Repository information -->
+  
+
+  <!-- Navigation list -->
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Home
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blog
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Blog
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/aspnet-core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASP.NET Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/aspnet-core-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASP.NET Core Identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/ef-core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EF Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../category/openapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenApi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2026-04-21 00:00:00+00:00" class="md-ellipsis">April 21, 2026</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3zm3 2 4 13 3-1-4-13zM5 5v13h3V5zM3 19v2h18v-2z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../../../../category/aspnet-core/">ASP.NET Core</a>, 
+                              <a href="../../../../category/aspnet-core-identity/">ASP.NET Core Identity</a>, 
+                              <a href="../../../../category/ef-core/">EF Core</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              7 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+
+
+
+
+<h1 id="look-behind-dbcontext-in-aspnet-core-identity"><strong>Look behind DbContext in ASP.NET Core Identity</strong><a class="headerlink" href="#look-behind-dbcontext-in-aspnet-core-identity" title="Permanent link">#</a></h1>
+<p>In this post I'll explain what's going on under the hood when you create your <code>ApplicationDbContext</code> using ASP.NET Core Identity in EF Core. <!-- more --> We'll cover where do the <strong>AspNetUsers</strong> and <strong>AspNetRoles</strong> tables actually come from and what really happens when you're inherit from <code>IdentityDbContext&lt;ApplicationUser&gt;</code>.</p>
+<p>Look at the basic <code>ApplicationDbContext</code> for the to do list project.</p>
+<div class="highlight"><pre><span></span><code><span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ApplicationDbContext</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IdentityDbContext</span><span class="o">&lt;</span><span class="n">ApplicationUser</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="nf">ApplicationDbContext</span><span class="p">(</span><span class="n">DbContextOptions</span><span class="o">&lt;</span><span class="n">ApplicationDbContext</span><span class="o">&gt;</span><span class="w"> </span><span class="n">options</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="k">base</span><span class="p">(</span><span class="n">options</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">DbSet</span><span class="o">&lt;</span><span class="n">TodoList</span><span class="o">&gt;</span><span class="w"> </span><span class="n">TodoLists</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">TodoList</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">DbSet</span><span class="o">&lt;</span><span class="n">TodoItem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">TodoItems</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">TodoItem</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">protected</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnModelCreating</span><span class="p">(</span><span class="n">ModelBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">base</span><span class="p">.</span><span class="n">OnModelCreating</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+<span class="w">        </span><span class="n">builder</span><span class="p">.</span><span class="n">ApplyConfigurationsFromAssembly</span><span class="p">(</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetExecutingAssembly</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Can you tell what exactly happens within the chain of inheritance? What path does the <code>ModelBuilder builder</code> take? What does that simple inheritance from <code>IdentityDbContext&lt;ApplicationUser&gt;</code> actually brings to the table?</p>
+<blockquote>
+<p>Keep that statement in mind: We're passing the <code>ModelBuilder builder</code> object into this entire chain of inheritance, so EF Core builds out the entire schema. Didn't click? Keep reading :)</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>IdentityDbContext&lt;ApplicationUser&gt;
+    ↑
+ApplicationDbContext
+</code></pre></div>
+<p>Well, let's dive in!</p>
+<hr />
+<p><strong>ASP.NET Core Identity</strong> is  a membership system that provides common features like user registration, login, role management, and claims-based authentication.</p>
+<p>For all this to become a reality, we need a Users table and a Roles table - along with several supporting tables. So, in addition to registering <code>DbSet</code> properties to interact with respective tables, our <code>ApplicationDbContext</code> must provide us with the entire schema and their respective columns:</p>
+<ul>
+<li>Roles tables<ul>
+<li><code>AspNetRoles</code></li>
+<li><code>AspNetRoleClaims</code></li>
+<li><code>AspNetUserRoles</code></li>
+</ul>
+</li>
+<li>Users tables<ul>
+<li><code>AspNetUsers</code></li>
+<li><code>AspNetUserClaims</code></li>
+<li><code>AspNetUserLogins</code></li>
+<li><code>AspNetUserTokens</code></li>
+<li><code>AspNetUserPasskeys</code></li>
+</ul>
+</li>
+</ul>
+<p>So, <strong>Identity should somehow create those tables for us</strong>, right? Right :)</p>
+<p>lets look at how it'll create them for us.</p>
+<hr />
+<p>First of all, following the inheritance chain:</p>
+<div class="highlight"><pre><span></span><code>IdentityDbContext&lt;ApplicationUser&gt;
+    ↑
+ApplicationDbContext&lt;IdentityUser&gt;
+</code></pre></div>
+<p>Navigate to the source code of the:</p>
+<div class="highlight"><pre><span></span><code>IdentityDbContext&lt;ApplicationUser&gt; 
+</code></pre></div>
+<p>We'll get into <code>IdentityDbContext.cs</code>. For now, just understand that <code>IdentityDbContext</code> class is responsible for generating the Roles tables and their respective columns for our <code>IdentityUser</code>.</p>
+<blockquote>
+<p>The common misconception is that <code>IdentityDbContext</code> handles <strong>only</strong> roles. In reality <code>IdentityDbContext</code> is responsible for <strong>extending</strong> the user-centric schema with roles.</p>
+</blockquote>
+<p>That file includes 5 versions of the <code>IdentityDbContext</code> class. At the top of the file you'll see non-generic</p>
+<div class="highlight"><pre><span></span><code>IdentityDbContext
+</code></pre></div>
+<p>This is the most basic <code>IdentityDbContext</code> class, you'd use this version in case you don't want to set your custom columns into the <code>IdentityUser</code>. </p>
+<p>But in our example we're using the generic version: </p>
+<div class="highlight"><pre><span></span><code>IdentityDbContext&lt;TUser&gt;
+</code></pre></div>
+<p>Notice that non-generic <code>IdentityDbContext</code> and generic <code>IdentityDbContext&lt;TUser&gt;</code> both inherit from</p>
+<div class="highlight"><pre><span></span><code>IdentityDbContext&lt;TUser, TRole, TKey&gt;
+</code></pre></div>
+<p>But each of them handles the types of base class differently. </p>
+<p>The non-generic <code>IdentityDbContext</code> </p>
+<div class="highlight"><pre><span></span><code>IdentityDbContext : IdentityDbContext&lt;IdentityUser, IdentityRole, string&gt;
+</code></pre></div>
+<p>sets the default type for <code>IdentityUser</code>, <code>IdentityRole</code> and primary key type as <code>string</code>. </p>
+<p>Conversely, the generic <code>IdentityDbContext&lt;TUser&gt;</code> </p>
+<div class="highlight"><pre><span></span><code><span class="n">IdentityDbContext</span><span class="o">&lt;</span><span class="n">TUser</span><span class="o">&gt;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IdentityDbContext</span><span class="o">&lt;</span><span class="n">TUser</span><span class="p">,</span><span class="w"> </span><span class="n">IdentityRole</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span>
+<span class="k">where</span><span class="w"> </span><span class="n">TUser</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IdentityUser</span>
+<span class="c1">// ☝️ Set the default type for TUser</span>
+</code></pre></div>
+<p>sets the generic type for <code>TUser</code> that must be a type of <code>IdentityUser</code>, so we can pass our own implementation of <code>IdentityUser</code> as we did right at the beginning of this post:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">//                Our custom user of type IdentityUser     👇</span>
+<span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ApplicationDbContext</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IdentityDbContext</span><span class="o">&lt;</span><span class="n">ApplicationUser</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Look carefully at the code in this file, you'll see that the chain of inheritance looks like this: </p>
+<div class="highlight"><pre><span></span><code>   ... (We&#39;ll dive deeper into that chain in a second)
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey&gt;
+    ↑ 
+IdentityDbContext&lt;TUser&gt; &amp; IdentityDbContext
+    ↑
+ApplicationDbContext (which inherits from IdentityDbContext&lt;TUser&gt;)
+</code></pre></div>
+<p><strong>But why do we need to have all of those variations of the <code>IdentityDbContext</code> class? Can't we just have non-generic one?</strong></p>
+<p>-&gt; The point of having different variations of the <code>IdentityDbContext</code> class is the ability to customize our roles in the way we want.</p>
+<p>Each variation of <code>IdentityDbContext</code> adds more specificity:</p>
+<ul>
+<li>
+<p><code>IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;</code> — the most abstract, allows you to replace all tables with your own implementations (we'll examine that class in a second).</p>
+</li>
+<li>
+<p><code>IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt;</code> - sets the standard type for (<code>TUserPasskey</code>), but leaves you free to customize <code>TUser, TRole, TKey, TUserClaim, TUserRole ...</code></p>
+</li>
+<li>
+<p><code>IdentityDbContext&lt;TUser, TRole, TKey&gt;</code> — 
+sets the standard types for relationships (<code>UserRole</code>, <code>Claim</code>, <code>Token</code>), but leaves you free to customize <code>&lt;TUser, TRole, TKey&gt;</code>.</p>
+</li>
+<li>
+<p><code>IdentityDbContext&lt;TUser&gt;</code> — sets the standard <code>IdentityRole</code> and string as a key, leaving freedom only for the custom TUser.</p>
+</li>
+<li>
+<p><code>IdentityDbContext (non-generic)</code> — only default implementation.</p>
+</li>
+</ul>
+<p>Now, let's check the most flexible <code>IdentityDbContext</code> class (the top class in the chain above) and its inner logic.</p>
+<p>If you follow the implementation of the <code>OnModelCreating()</code> from the initial code:</p>
+<div class="highlight"><pre><span></span><code><span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ApplicationDbContext</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IdentityDbContext</span><span class="o">&lt;</span><span class="n">ApplicationUser</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+
+<span class="w">    </span><span class="k">protected</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnModelCreating</span><span class="p">(</span><span class="n">ModelBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">//👇 Dive here</span>
+<span class="w">        </span><span class="k">base</span><span class="p">.</span><span class="n">OnModelCreating</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+<span class="w">        </span><span class="n">builder</span><span class="p">.</span><span class="n">ApplyConfigurationsFromAssembly</span><span class="p">(</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetExecutingAssembly</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The chain looks like this: </p>
+<blockquote>
+<p>✅ - <code>OnModelCreating()</code> method is present </p>
+<p>❌ - <code>OnModelCreating()</code> method is <strong>not</strong> present</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>       ... (We&#39;ll dive deeper into that chain in a second)
+        ↑
+✅ IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;
+        ↑
+❌ IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt;
+        ↑
+❌ IdentityDbContext&lt;TUser, TRole, TKey&gt; 
+        ↑ 
+❌ IdentityDbContext&lt;TUser&gt; 
+        ↑
+✅ ApplicationDbContext
+</code></pre></div>
+<p>You'll land in the topmost class with an override - back to our most flexible <code>IdentityDbContext</code>:</p>
+<div class="highlight"><pre><span></span><code>IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;
+</code></pre></div>
+<p>Notice that it has a logic for those methods: 
+- <code>OnModelCreating()</code> 
+    - calls <code>base.OnModelCreating(builder)</code>, passing the builder object up to the parent
+- <code>OnModelCreatingVersion3()</code>
+- <code>OnModelCreatingVersion2()</code>
+- <code>OnModelCreatingVersion1()</code></p>
+<p>Keep in mind that all of those methods are being overriden by this class, meaning its base class <code>IdentityUserContext</code> - defines the <code>virtual</code> versions of these methods, providing the base implementation.</p>
+<p><strong>But why do we need to have 3 different versions of the same <code>OnModelCreatingVersion_()</code>? Can't we just use one version?</strong></p>
+<p>-&gt; These three versions of <code>OnModelCreatingVersion_()</code> are all about versioning the Identity database schema to avoid breaking older applications during upgrades.</p>
+<p>Imagine you created your database schema several years ago using an older version of Identity. Later, you upgrade your project to a newer version with updated <code>DbContext</code> types.</p>
+<p>By keeping separate schema versions, Identity ensures that older databases continue to work correctly even after update.</p>
+<p>By default Identity uses the latest <code>OnModelCreatingVersion3()</code> version inside of the <code>IdentityDbContext&lt;...&gt;</code> parent class - <code>IdentityUserContext</code> </p>
+<blockquote>
+<p>Although it is technically possible to target an earlier version, using the latest one is strongly recommended for new projects. We'll take a look at the source code of <code>IdentityUserContext</code> to understand how the schema version is selected in a second.</p>
+</blockquote>
+<p>Now, lets examine that topmost <code>IdentityDbContext&lt;...&gt;</code> class.</p>
+<blockquote>
+<p>I've intentionally ommitted most of the source code, as the key part is the <code>OnModelCreating()</code> and <code>OnModelCreatingVersion3()</code> logic inside of it.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">public</span><span class="w"> </span><span class="k">abstract</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">IdentityDbContext</span><span class="o">&lt;</span><span class="n">TUser</span><span class="p">,</span><span class="w"> </span><span class="n">TRole</span><span class="p">,</span><span class="w"> </span><span class="n">TKey</span><span class="p">,</span><span class="w"> </span><span class="n">TUserClaim</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="o">&gt;</span><span class="w"> </span>
+<span class="p">:</span><span class="w"> </span><span class="n">IdentityUserContext</span><span class="o">&lt;</span><span class="n">TUser</span><span class="p">,</span><span class="w"> </span><span class="n">TKey</span><span class="p">,</span><span class="w"> </span><span class="n">TUserClaim</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="o">&gt;</span>
+<span class="c1">//   ☝️ Parent class</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">//...</span>
+
+<span class="w">    </span><span class="k">protected</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnModelCreating</span><span class="p">(</span><span class="n">ModelBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">base</span><span class="p">.</span><span class="n">OnModelCreating</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span><span class="c1">// 👈 Delegate to the parent</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">internal</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">ModelBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">base</span><span class="p">.</span><span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span><span class="w"> </span><span class="c1">// 👈 Delegate to the parent and perform its own logic below</span>
+
+<span class="w">        </span><span class="n">builder</span><span class="p">.</span><span class="n">Entity</span><span class="o">&lt;</span><span class="n">TUser</span><span class="o">&gt;</span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// fluent API that mutates the builder object.</span>
+<span class="w">        </span><span class="p">});</span>
+
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>First, notice that in <code>OnModelCreating(ModelBuilder builder)</code>, this class simply delegates the execution to the base implementation:</p>
+<div class="highlight"><pre><span></span><code><span class="k">base</span><span class="p">.</span><span class="n">OnModelCreating</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span><span class="w"> </span>
+<span class="c1">//☝️ Delegate to the parent</span>
+</code></pre></div>
+<p>The same pattern appears in <code>OnModelCreatingVersion3(ModelBuilder builder)</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="k">internal</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">ModelBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">base</span><span class="p">.</span><span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Perform its own implementation after the parent logic</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<blockquote>
+<p>As well as <code>OnModelCreatingVersion3()</code> other versions: 2 and 1 are delegating the execution to the parent.</p>
+</blockquote>
+<p>This is important as it shows that the actual version-selection logic and core configuration are defined in the base class (<code>IdentityUserContext</code>), while <code>IdentityDbContext</code> only extends that configuration providing the roles schema.</p>
+<p>Now, before diving into the <code>IdentityUserContext</code> class, lets revisit our chain of inheritance and to understand where <code>IdentityDbContext</code> fits with its parent classs - <code>IdentityUserContext</code></p>
+<div class="highlight"><pre><span></span><code>   ...
+    ↑
+IdentityUserContext&lt;TUser, TKey, TUserClaim, TUserLogin, TUserToken, TUserPasskey&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserPasskey&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken&gt;
+    ↑
+IdentityDbContext&lt;TUser, TRole, TKey&gt;
+    ↑ 
+IdentityDbContext&lt;TUser&gt; &amp; IdentityDbContext
+    ↑
+ApplicationDbContext
+</code></pre></div>
+<hr />
+<p>Now, lets move one level up and examine the parent class - <code>IdentityUserContext</code>. </p>
+<p>As the name suggests, this class is responsible for configuring the <strong>user-related</strong> part of the Identity schema. In contrast, <code>IdentityDbContext</code> <strong>builds on top of it and adds support for roles</strong> and related entities.</p>
+<p>When you navigate to the source code of <code>IdentityUserContext</code>, you'll find multiple generic variations of the class. Similar to <code>IdentityDbContext</code>, they form an internal inheritance chain:</p>
+<div class="highlight"><pre><span></span><code>   👇 Pparent class
+ DbContext
+    ↑
+IdentityUserContext&lt;TUser, TKey, TUserClaim, TUserLogin, TUserToken, TUserPasskey&gt;
+    ↑
+IdentityUserContext&lt;TUser, TKey, TUserClaim, TUserLogin, TUserToken&gt;
+    ↑
+IdentityUserContext&lt;TUser, TKey&gt;
+    ↑
+IdentityUserContext&lt;TUser&gt;
+</code></pre></div>
+<p>Now, lets take a look at the implementation of the 
+- <code>OnModelCreating()</code>
+- <code>OnModelCreatingVersion()</code> (which contains version-selection logic) 
+- <code>OnModelCreatingVersion3()</code></p>
+<blockquote>
+<p>As in the previous examples, most of the source code is omitted. The focus here is on OnModelCreating() and the version-selection logic.</p>
+</blockquote>
+<p>First, lets examine <code>OnModelCreating()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">protected</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnModelCreating</span><span class="p">(</span><span class="n">ModelBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetStoreOptions</span><span class="p">()</span><span class="o">?.</span><span class="n">SchemaVersion</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="n">IdentitySchemaVersions</span><span class="p">.</span><span class="n">Version1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">OnModelCreatingVersion</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span><span class="w"> </span><span class="n">version</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This line defines which schema version Identity will use:</p>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetStoreOptions</span><span class="p">()</span><span class="o">?.</span><span class="n">SchemaVersion</span><span class="w"> </span>
+<span class="w">              </span><span class="o">??</span><span class="w"> </span><span class="n">IdentitySchemaVersions</span><span class="p">.</span><span class="n">Version1</span><span class="p">;</span>
+</code></pre></div>
+<p>If no schema version is explicitly configured, Identity falls back to a default value and ultimately uses the latest supported schema version (currently Version3).</p>
+<p>This means that in most cases, you do not need to manually specify the schema version — the framework will automatically select the appropriate one.</p>
+<p>Next, let's examine <code>OnModelCreatingVersion()</code>, where the internal version-selection logic is implemented:</p>
+<div class="highlight"><pre><span></span><code><span class="k">internal</span><span class="w"> </span><span class="k">virtual</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnModelCreatingVersion</span><span class="p">(</span><span class="n">ModelBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">,</span><span class="w"> </span><span class="n">Version</span><span class="w"> </span><span class="n">schemaVersion</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">schemaVersion</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">IdentitySchemaVersions</span><span class="p">.</span><span class="n">Version3</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="nf">if</span><span class="w"> </span><span class="p">(</span><span class="n">schemaVersion</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">IdentitySchemaVersions</span><span class="p">.</span><span class="n">Version2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">OnModelCreatingVersion2</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">OnModelCreatingVersion1</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Here, the schemaVersion value (resolved in the previous step) determines which version-specific method will be executed. By default (and in our case), it leads to a call to <code>OnModelCreatingVersion3(builder)</code>.</p>
+<p>Since <code>OnModelCreatingVersion3()</code> is a <strong><code>virtual</code></strong> method, the actual implementation that runs first is the <code>override</code> in <code>IdentityDbContext</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">internal</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">ModelBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">base</span><span class="p">.</span><span class="n">OnModelCreatingVersion3</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span><span class="w"> </span><span class="c1">// 👈 Delegate to the parent</span>
+
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This means execution flows back to <code>IdentityDbContext</code>, where additional configuration is applied on top of the base identity schema.</p>
+<p>When <code>OnModelCreatingVersion3()</code> is executed, the call to <code>base.OnModelCreatingVersion3()</code> ensures that the base class (<code>IdentityUserContext</code>) contributes its configuration to the same <code>ModelBuilder builder</code> object.</p>
+<p><code>IdentityUserContext</code> adds the core <strong>user-related</strong> entities, while <code>IdentityDbContext</code> extends the same model with <strong>role-related</strong> entities such as roles, user roles, and role claims.</p>
+<p>After the base class logic is executed, <code>IdentityDbContext</code> continues execution and applies its own configuration on top of the existing model.</p>
+<p>In this way, the same <code>ModelBuilder</code> instance is incrementally configured as it <strong>"flows"</strong> through the inheritance chain of contexts.</p>
+<hr />
+<p>This entire process demonstrates how the <code>ModelBuilder</code> is progressively configured through multiple layers of Identity before being finalized into a metadata model, which EF Core later uses to generate SQL for the application.</p>
+<p>I strongly recommend to read the article about <a href="https://medium.com/@a.kago1988/the-model-metadata-graph-entity-frameworks-intermediate-representation-ir-590397e00e51">EF Core’s Internal Data Representation</a></p>
+<p>That's it for today, thanks for reading :)</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <!-- Footer -->
+<footer class="md-footer">
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright" style="text-align: center; width: 100%;">
+  
+  
+    <div>© 2026 Dmytro Shved | All Rights Reserved</div>
+  
+</div>
+
+      <!-- Social links -->
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.tabs", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
