@@ -35,7 +35,7 @@ scalable code. You can mostly find me by the smell of coffee, working on my lapt
 <div class="project-header">
   <img class="project-header__icon" src="images/bookrest.svg" alt="BookRest">
   <div class="project-header__content">
-    <div class="project-header__title">BookRest - Backend Developer</div>
+    <div class="project-header__title"><a href="https://github.com/dmshved/bookrest">BookRest</a> - Backend Developer</div>
     <div class="project-header__meta">
       March 2026 - (in development)
       <strong>Tech Stack:</strong> C# | ASP.NET Core | PostgreSQL
@@ -55,7 +55,7 @@ scalable code. You can mostly find me by the smell of coffee, working on my lapt
   <img class="project-header__icon" src="images/gourmania.png" alt="Gourmania">
   
   <div class="project-header__content">
-    <div class="project-header__title">Gourmania - Fullstack Developer</div>
+    <div class="project-header__title"><a href="https://github.com/dmshved/Gourmania">Gourmania</a> - Fullstack Developer</div>
     <div class="project-header__meta">
       January 2025 - December 2025
       <strong>Tech Stack</strong> PHP | Laravel | Livewire | MySQL
@@ -72,9 +72,9 @@ scalable code. You can mostly find me by the smell of coffee, working on my lapt
 ---
 
 ## **Skills**
-- **Languages:** C# | JavaScript | TypeScript | PHP | Bash
+- **Languages:** C# | PHP
 - **Platform & DevOps:** Docker | Kubernetes _(learning)_ | Git
-- **Frameworks & Tools:** .NET | Laravel | Angular _(learning)_
-- **Databases:** PostgreSQL | MySQL | SQLite
-- **Architecture & Practices:** REST APIs | Automation | Developer Experience
+- **Frameworks & Tools:** .NET | Laravel
+- **Databases:** PostgreSQL | MySQL
+- **Architecture & Practices:** REST APIs | MVC | Clean Architecture | Automation
 - **Operating Systems:** Linux (Arch) | Windows

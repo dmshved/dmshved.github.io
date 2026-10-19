@@ -30,3 +30,41 @@
 .md-grid {
   max-width: 1000px; 
 }
+
+/* disable animations (keep tabs animations) */
+a,
+.md-button,
+.md-typeset a,
+.md-nav__link,
+.md-tabs__link,
+.md-header__button,
+button {
+  transition: none !important;
+}
+
+.md-nav__link:hover,
+.md-nav__link:focus {
+  color: inherit;
+  background-color: transparent;
+}
+
+.md-tabs__link:hover,
+.md-tabs__link:focus {
+  color: inherit;
+  opacity: 1;
+}
+
+.md-header__button:hover,
+.md-header__button:focus {
+  opacity: 1;
+  background-color: transparent;
+}
+
+.md-button:hover,
+.md-button:focus,
+.md-button--primary:hover,
+.md-button--primary:focus {
+  background-color: var(--md-primary-fg-color);
+  border-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
