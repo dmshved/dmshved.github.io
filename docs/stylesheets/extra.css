@@ -68,3 +68,34 @@ button {
   border-color: var(--md-primary-fg-color);
   color: var(--md-primary-bg-color);
 }
+
+/* underline links */
+.md-typeset a {
+  text-decoration: underline;
+}
+
+/* navigation links: underline on hover */
+.md-nav__link,
+.md-tabs__link {
+  text-decoration: none;
+}
+
+.md-nav__link:hover,
+.md-nav__link:focus-visible,
+.md-tabs__link:hover,
+.md-tabs__link:focus-visible {
+  text-decoration: underline;
+}
+
+/* buttons: underline hover */
+.md-button,
+.md-header__button {
+  text-decoration: none;
+}
+
+.md-button:hover,
+.md-button:focus-visible,
+.md-header__button:hover,
+.md-header__button:focus-visible {
+  text-decoration: underline;
+}
