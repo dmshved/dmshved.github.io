@@ -6,13 +6,13 @@ hide:
 
 # Home
 
-## **Hello there, I’m Dmytro**👋
+### **Hello there, I’m Dmytro**👋
 
 [![LinkedIn](https://custom-icon-badges.demolab.com/badge/-0A66C2?logo=linkedin-white&logoColor=fff)](https://www.linkedin.com/in/dmytro-shved/)
 [![StackOverflow](https://img.shields.io/badge/-333?logo=stackoverflow&style=flat-square&logoColor=FE7A16)](https://stackoverflow.com/users/30065272/dmytroshved?tab=profile)
 [![Gmail](https://img.shields.io/badge/-D14836?style=flat-square&logo=gmail&logoColor=white)](https://mail.google.com/mail/u/0/?view=cm&fs=1&to=d.shved.wrk@gmail.com&tf=cm)
 [![GitHub](https://img.shields.io/badge/-%23121011.svg?logo=github&logoColor=white)](https://github.com/dmshved)
-
+[![RSS](https://img.shields.io/badge/-FFA500?style=flat-square&logo=rss&logoColor=white)](/feed_rss_created.xml)
 
 Everything I build is driven by a **desire to become better**.
 
@@ -23,19 +23,19 @@ scalable code. You can mostly find me by the smell of coffee, working on my lapt
 
 ---
 
-## **Currentlry working on**
+### **Currentlry working on**
 
 - Building [bookrest](https://github.com/dmshved/bookrest) API as my pet-project
 - Learning Docker and exploring Kubernetes
 
 ---
 
-## **Practical Experience**
+### **Projects**
 
 <div class="project-header">
   <img class="project-header__icon" src="images/bookrest.svg" alt="BookRest">
   <div class="project-header__content">
-    <div class="project-header__title"><a href="https://github.com/dmshved/bookrest">BookRest</a> - Backend Developer</div>
+    <div class="project-header__title" style="font-size: 19px"><a href="https://github.com/dmshved/bookrest">BookRest</a> - Backend Developer</div>
     <div class="project-header__meta">
       March 2026 - (in development)
       <strong>Tech Stack:</strong> C# | ASP.NET Core | PostgreSQL
@@ -44,17 +44,19 @@ scalable code. You can mostly find me by the smell of coffee, working on my lapt
 </div>
 
 - Implemented a **Clean Architecture** design pattern with **CQRS** keeping use cases focused, scalable and testable.
-- Implemented **ASP.NET Core Identity + JWT** (Access/Refresh Tokens) with refresh token rotation, establishing a scalable, stateless authentication.
-- Implementing **Stripe** financial platform to be able to accept payments, manage billing and scale.
-- Implementing **CI/CD** pipeline bringing fast and reliable development lifecycle.
+- Implemented **ASP.NET Core Identity** with **JWT**, including access and refresh tokens with refresh token rotation, to
+deliver a high-security and scalable authentication system.
+- Integrated email delivery with **Amazon SES**, supporting account verification and notifications through a reliable, scalable, cloud-based emailing service.
+- Integrating **Stripe** financial platform to be able to accept payments, manage billing and scale.
+- Implemented **CI/CD** pipeline using **GitHub Actions** to automate builds and testing, ensuring a fast and reliable development lifecycle.
 - Implementing and extending **Docker** containerization with **Kubernetes** providing consistency across environments.
-- Implementing **Integrational** and **Unit Testing** keeping quality, reliability and security of application.
+- Implemented **Integrational** and **Unit Testing** keeping quality, reliability and security of application.
 
 <div class="project-header">
   <img class="project-header__icon" src="images/gourmania.png" alt="Gourmania">
   
   <div class="project-header__content">
-    <div class="project-header__title"><a href="https://github.com/dmshved/Gourmania">Gourmania</a> - Fullstack Developer</div>
+    <div class="project-header__title" style="font-size: 19px"><a href="https://github.com/dmshved/Gourmania">Gourmania</a> - Fullstack Developer</div>
     <div class="project-header__meta">
       January 2025 - December 2025
       <strong>Tech Stack</strong> PHP | Laravel | Livewire | MySQL
@@ -70,9 +72,9 @@ scalable code. You can mostly find me by the smell of coffee, working on my lapt
 
 ---
 
-## **Skills**
+### **Skills**
 - **Languages:** C# | PHP
-- **Platform & DevOps:** Docker | Kubernetes _(learning)_ | Git
+- **Platform & DevOps:** Docker | Git | GitHub Actions | AWS (Amazon SES) | Kubernetes _(learning)_
 - **Frameworks & Tools:** .NET | Laravel
 - **Databases:** PostgreSQL | MySQL
 - **Architecture & Practices:** REST APIs | MVC | Clean Architecture | Automation

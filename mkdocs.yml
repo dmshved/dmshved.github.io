@@ -12,12 +12,14 @@ markdown_extensions:
         permalink: "#"
 plugins:
   - rss:
-      match_path: blog/posts/.* 
+      match_path: blog/posts/.*
       date_from_meta:
         as_creation: date
       categories:
         - categories
         - tags
+      stylesheet: ""
+      image: https://dmytroshved.com
   - blog
   - search
   - social:
