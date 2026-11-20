@@ -99,3 +99,35 @@ button {
 .md-header__button:focus-visible {
   text-decoration: underline;
 }
+
+/* Blog post cards – simple frame */
+.md-typeset .blog-post,
+article.post,
+.md-post,
+.blog .md-typeset > article,
+.blog article {
+  border: 2px solid #9b9b9b;
+  /* border-radius: 8px; */
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* remove white shadow in the nav box */
+.md-nav__title,
+.md-nav__container {
+    box-shadow: none !important;
+}
+
+/* page size */
+.md-grid {
+    max-width: 1100px;
+}
+
+.md-typeset {
+    max-width: 100%;
+}
+
+/* remove time to read from post metadata */
+.md-nav__link:has(svg path[d^="M12 20a8 8 0 0 0 8-8"]) {
+    display: none;
+}
